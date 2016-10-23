@@ -1,0 +1,13 @@
+{
+	"FileVersion": 3,
+	"EngineAssociation": "{B9539D8B-4BEE-2B40-74CC-03A284F43121}",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "EpicSandbox",
+			"Type": "Runtime",
+			"LoadingPhase": "Default"
+		}
+	]
+}
