@@ -5,21 +5,10 @@ using System.Collections.Generic;
 
 public class EpicSandboxTarget : TargetRules
 {
-	public EpicSandboxTarget(TargetInfo Target)
+	public EpicSandboxTarget(TargetInfo Target) : base (Target)
 	{
 		Type = TargetType.Game;
-	}
 
-	//
-	// TargetRules interface.
-	//
-
-	public override void SetupBinaries(
-		TargetInfo Target,
-		ref List<UEBuildBinaryConfiguration> OutBuildBinaryConfigurations,
-		ref List<string> OutExtraModuleNames
-		)
-	{
-		OutExtraModuleNames.AddRange( new string[] { "EpicSandbox" } );
+        ExtraModuleNames.AddRange( new string[] { "EpicSandbox" } );
 	}
 }
