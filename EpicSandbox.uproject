@@ -1,13 +1,21 @@
 {
 	"FileVersion": 3,
-	"EngineAssociation": "{B9539D8B-4BEE-2B40-74CC-03A284F43121}",
+	"EngineAssociation": "{775E4348-468A-EF09-AF2D-DF8AA99A08BE}",
 	"Category": "",
 	"Description": "",
 	"Modules": [
 		{
 			"Name": "EpicSandbox",
 			"Type": "Runtime",
-			"LoadingPhase": "Default"
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine"
+			]
+		},
+		{
+			"Name": "EpicSandboxEditor",
+			"Type": "Editor",
+			"LoadingPhase": "PostEngineInit"
 		}
 	]
 }
