@@ -8,10 +8,29 @@
 #include "UObject/Object.h"
 #include "MyCustomAsset.generated.h"
 
+USTRUCT()
+struct FCustomMeshStruct
+{
+	GENERATED_BODY()
+
+	// Adding this makes the MeshName property marked as changed... Wonder if there is a way to make not do that...
+	FCustomMeshStruct()
+		: MeshName("CustomMeshName")
+	{
+		CustomStructMesh = nullptr;
+	}
+	
+	UPROPERTY(EditDefaultsOnly)
+	FName MeshName;
+
+	UPROPERTY(EditDefaultsOnly, meta=(DisplayName = "Struct Static Mesh"))
+	UStaticMesh* CustomStructMesh;
+};
+
 /**
  * 
  */
-UCLASS()
+UCLASS(BlueprintType)
 class EPICSANDBOX_API UMyCustomAsset : public UObject
 {
 	GENERATED_BODY()
@@ -19,23 +38,37 @@ class EPICSANDBOX_API UMyCustomAsset : public UObject
 public:
 	UMyCustomAsset();
 	
-	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(UIMin=0, UIMax=10), AssetRegistrySearchable)
+	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(UIMin = 0, UIMax = 10, DisplayAfter = "CustomDataAsset"), AssetRegistrySearchable)
 	int32 CustomInt;
 
-	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset)
+	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(DisplayAfter = "bIsActive"))
 	UMyCustomDataAsset* CustomDataAsset;
 
-	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(EditCondition="CustomInt > 5"))
+	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(EditCondition = "CustomInt > 5"))
 	bool bIsActive;
 
-	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset)
-	class UStaticMesh* CustomStaticMesh;
+	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(DisplayName = "First Static Mesh"))
+	class UStaticMesh* FirstCustomStaticMesh;
+
+	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(DisplayName = "Second Static Mesh"))
+	class UStaticMesh* SecondCustomStaticMesh;
+
+	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(DisplayName = "Struct Mesh"))
+	FCustomMeshStruct CustomStructMesh;
+
+	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(DisplayName = "List of Struct Static Meshes", TitleProperty = "MeshName"))
+	TArray<FCustomMeshStruct> CustomStaticMeshes;
 
 	virtual void GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags) const override;
+	
+#if WITH_EDITOR
+	virtual void GetAssetRegistryTagMetadata(TMap<FName, FAssetRegistryTagMetadata>& OutMetadata) const override;
+#endif
+
 protected:
-	UPROPERTY(EditDefaultsOnly, Category="MyCustomAsset|Description", meta=(InlineEditCondition))
+	UPROPERTY(EditDefaultsOnly, Category="MyCustomAsset|Description", meta=(InlineEditConditionToggle)) //InlineEditConditionTOGGLE inlines the bool visually (puts it on the same row)
 	bool bEnableDescription;
 	
-	UPROPERTY(EditDefaultsOnly, Category="MyCustomAsset|Description", meta=(EditCondition="bEnableDescription"))
+	UPROPERTY(EditDefaultsOnly, Category="MyCustomAsset|Description", meta=(EditCondition = "bEnableDescription"))
 	FString Description;
 };
