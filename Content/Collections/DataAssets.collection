@@ -1,0 +1,6 @@
+FileVersion:2
+Type:Dynamic
+Guid:D53A76B5-4832-EAC5-C329-E3B3481F7F06
+ParentGuid:00000000-0000-0000-0000-000000000000
+
+(Type=MyCustomAsset OR Type=DataAsset) AND (Path:'/Game/'...)
