@@ -23,9 +23,9 @@ public:
 	virtual void GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags) const override;
 	
 protected:
-	UPROPERTY(EditAnywhere, Category=MyCustomDataAsset, meta=(EditCondition="bIsDataActive"))
+	UPROPERTY(EditAnywhere, Category=MyCustomDataAsset, meta=(EditCondition="bIsDataActive", DisplayAfter="bIsDataActive"))
 	FString DataDescription;
 
-	UPROPERTY(EditAnywhere, Category=MyCustomDataAsset, meta=(InlineEditCondition))
+	UPROPERTY(EditAnywhere, Category=MyCustomDataAsset, meta=(InlineEditCondition, DisplayName="Is Data Active?"))
 	bool bIsDataActive;
 };
