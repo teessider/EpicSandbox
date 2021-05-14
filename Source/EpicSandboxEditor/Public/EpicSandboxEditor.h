@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Modules/ModuleInterface.h"
 #include "AssetTypeCategories.h"
+#include "Styling/SlateStyle.h"
 
 /* Following the NiagaraEditor way of doing AssetTypeActions allows for an easier way of doing multiple AssetTypeActions!
  * - Add private static EAssetTypeCategories::Type with a Getter (getter is for the AssetTypeActions GetCategories() method)
@@ -27,6 +28,8 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 	// End IModuleInterface implementation
+
+	TSharedPtr<FSlateStyleSet> EpicSandboxEditorStyle;  // Could be in own module or plugin!
 
 	static EAssetTypeCategories::Type GetAssetCategory() { return EpicSandboxAssetCategory; }
 

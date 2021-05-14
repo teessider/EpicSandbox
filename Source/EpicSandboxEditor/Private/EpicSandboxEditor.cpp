@@ -7,6 +7,7 @@
 #include "AssetToolsModule.h"
 #include "IAssetTools.h"
 #include "Modules/ModuleManager.h"
+#include "Styling/SlateStyleRegistry.h"
 
 DEFINE_LOG_CATEGORY(LogEpicSandboxEditor)
 
@@ -17,6 +18,27 @@ EAssetTypeCategories::Type FEpicSandboxEditor::EpicSandboxAssetCategory;  // For
 void FEpicSandboxEditor::StartupModule()
 {
 	// UE_LOG(LogEpicSandboxEditor, Warning, TEXT("Editor (for Game) Module Started"));
+
+	// START OF SLATE STUFF
+	if (!EpicSandboxEditorStyle.IsValid())
+	{
+		EpicSandboxEditorStyle = MakeShareable(new FSlateStyleSet("EpicSandboxStyle"));
+
+		// For now though the default one(s) are used (the editor folders)
+		//F:\SandboxEngine\Engine\Content\Editor\Slate\Icons\AssetIcons <- location of editor icons
+		EpicSandboxEditorStyle->SetContentRoot(FPaths::EngineContentDir() / TEXT("Editor/Slate"));
+		EpicSandboxEditorStyle->SetCoreContentRoot(FPaths::EngineContentDir() / TEXT("Slate")); 
+
+		const FVector2D Icon16x16(16.0f, 16.0f);
+		const FVector2D Icon64x64(64.0f, 64.0f);
+
+		// TODO: Turn the SlateImageBrush() into macro IMAGE_BRUSH like in other places
+		EpicSandboxEditorStyle->Set("ClassIcon.MyCustomAsset", new FSlateImageBrush(EpicSandboxEditorStyle->RootToContentDir(TEXT("Icons/AssetIcons/DataAsset_16x.png")), Icon16x16));
+		EpicSandboxEditorStyle->Set("ClassThumbnail.MyCustomAsset", new FSlateImageBrush(EpicSandboxEditorStyle->RootToContentDir(TEXT("Icons/AssetIcons/DataAsset_64x.png")), Icon64x64));
+			
+		FSlateStyleRegistry::RegisterSlateStyle(*EpicSandboxEditorStyle); // Make sure to register the style!
+	}
+	// END OF SLATE STUFF
 
 	IAssetTools& AssetTools = FModuleManager::LoadModuleChecked<FAssetToolsModule>("AssetTools").Get();
 
@@ -37,6 +59,14 @@ void FEpicSandboxEditor::StartupModule()
 
 void FEpicSandboxEditor::ShutdownModule()
 {
+	// SLATE STUFF
+	//Unregister the Slate Style here too
+	if (EpicSandboxEditorStyle.IsValid())
+	{
+		FSlateStyleRegistry::UnRegisterSlateStyle(EpicSandboxEditorStyle->GetStyleSetName());
+	}
+	// END SLATE STUFF
+	
 	// Based on NiagarEditorModule Shutdown method...
 	// It's good practice to unregister the AssetTypeActions
 	if (FModuleManager::Get().IsModuleLoaded("AssetTools"))

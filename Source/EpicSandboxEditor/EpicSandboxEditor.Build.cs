@@ -16,7 +16,8 @@ public class EpicSandboxEditor : ModuleRules
 			"Engine",
 			"InputCore",
 			"UnrealEd",
-			"AssetTools"
+			"AssetTools",
+			"SlateCore"
 		}
 		);
 		
