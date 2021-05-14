@@ -38,5 +38,10 @@ void UMyCustomAsset::GetAssetRegistryTagMetadata(TMap<FName, FAssetRegistryTagMe
 		.SetTooltip(NSLOCTEXT("UMyCustomAsset", "IsActiveTooltip", "Is this Asset Active ?"))
 		.SetImportantValue(TEXT("True"))
 		);
+
+	OutMetadata.Add("CustomDataAsset",
+		FAssetRegistryTagMetadata()
+		.SetImportantValue(TEXT("None"))
+		);
 }
 #endif
