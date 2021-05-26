@@ -37,6 +37,8 @@ private:
 	static EAssetTypeCategories::Type EpicSandboxAssetCategory;
 
 	void RegisterAssetTypeAction(IAssetTools& AssetTools, TSharedRef<IAssetTypeActions> Action);
+	void RegisterAssetTypeActions();
+	void UnregisterAssetTypeActions();
 
 	/** All created asset type actions.  Cached here so that they can be unregistered during shutdown. */
 	TArray< TSharedPtr<IAssetTypeActions> > CreatedAssetTypeActions;

@@ -10,6 +10,8 @@ UMyCustomAsset::UMyCustomAsset()
 
 void UMyCustomAsset::GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags) const
 {
+
+	Super::GetAssetRegistryTags(OutTags);
 	
 #if WITH_EDITORONLY_DATA
 	OutTags.Add(FAssetRegistryTag("FirstCustomMesh", FirstCustomStaticMesh ? TEXT("UObject Name ") + FirstCustomStaticMesh->GetName() : TEXT("None"), FAssetRegistryTag::TT_Alphabetical));
@@ -21,8 +23,6 @@ void UMyCustomAsset::GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags) co
 	OutTags.Add(FAssetRegistryTag("Description", Description.IsEmpty() ? TEXT("Empty") : Description, FAssetRegistryTag::TT_Alphabetical));
 	OutTags.Add(FAssetRegistryTag("CustomDataAsset", CustomDataAsset ? CustomDataAsset->GetName() : TEXT("None"), FAssetRegistryTag::TT_Alphabetical));
 #endif
-
-	Super::GetAssetRegistryTags(OutTags);
 }
 
 #if WITH_EDITOR
