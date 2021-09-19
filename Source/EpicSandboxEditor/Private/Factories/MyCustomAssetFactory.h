@@ -8,7 +8,7 @@
 #include "MyCustomAssetFactory.generated.h"
 
 UCLASS()
-class EPICSANDBOXEDITOR_API UMyCustomAssetFactory : public UFactory
+class EPICSANDBOXEDITOR_API UMyCustomAssetFactory final : public UFactory
 {
 	GENERATED_BODY()
 	

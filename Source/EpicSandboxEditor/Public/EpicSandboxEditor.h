@@ -21,7 +21,7 @@ class IAssetTypeActions;
 
 DECLARE_LOG_CATEGORY_EXTERN(LogEpicSandboxEditor, All, All)
 
-class EPICSANDBOXEDITOR_API FEpicSandboxEditor : public IModuleInterface
+class EPICSANDBOXEDITOR_API FEpicSandboxEditor final : public IModuleInterface
 {
 public:
 	// Begin IModuleInterface implementation
