@@ -63,6 +63,8 @@ public:
 	
 #if WITH_EDITOR
 	virtual void GetAssetRegistryTagMetadata(TMap<FName, FAssetRegistryTagMetadata>& OutMetadata) const override;
+
+	virtual EDataValidationResult IsDataValid(TArray<FText>& ValidationErrors) override;
 #endif
 
 protected:
