@@ -16,6 +16,8 @@ public:
 	UMyCustomAssetFactory();
 	
 	// Begin UFactory Implementation
+	// virtual FName GetNewAssetThumbnailOverride() const override; // should only override if SupportedClass is like an Abstract/Base Class
+	// virtual bool ConfigureProperties() override;
 	virtual UObject* FactoryCreateNew(UClass* InClass, UObject* InParent, FName InName, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn) override;
 	// End UFactory Implementation
 };
