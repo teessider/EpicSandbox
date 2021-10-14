@@ -10,14 +10,22 @@ public class EpicSandboxEditor : ModuleRules
 
 		PublicDependencyModuleNames.AddRange(
 			new []
+			{
+				"Engine"
+			}
+			);
+		
+		// Since almost all the EpicSandbox Editor module is in the private, add them here
+		PrivateDependencyModuleNames.AddRange(
+			new []
 		{
 			"Core", 
 			"CoreUObject",
-			"Engine",
-			"InputCore",
 			"UnrealEd",
 			"AssetTools",
-			"SlateCore"
+			"SlateCore",
+			"Slate", 
+			"EditorStyle"
 		}
 		);
 		
