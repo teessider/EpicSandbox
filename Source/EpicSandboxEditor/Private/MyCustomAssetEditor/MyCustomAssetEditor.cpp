@@ -2,6 +2,7 @@
 
 
 #include "MyCustomAssetEditor.h"
+#include "MyCustomAsset.h"
 
 #define LOCTEXT_NAMESPACE "CustomAssetEditor"
 
@@ -10,7 +11,7 @@ const FName FMyCustomAssetEditor::CustomAssetEditorAppIdentifier(TEXT("CustomAss
 const FName FMyCustomAssetEditor::DetailsTabId(TEXT("CustomAssetEditor_Details"));
 const FName FMyCustomAssetEditor::ViewportTabId(TEXT("CustomAssetEditor_Viewport"));
 
-// TODO: GET INITIAL ASSET EDITOR RUNNING
+// TODO: GET ASSET EDITOR VIEWPORT WORKING
 
 // CURRENT PROGRESS: Got it to compile so far(with just the Main Asset Editor Toolbar) but it is not called by anything...
 // will have to do that via the AssetTypeActions class...
@@ -31,6 +32,7 @@ void FMyCustomAssetEditor::RegisterTabSpawners(const TSharedRef<FTabManager>& In
 		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
 		.SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Details"));
 
+	// TODO: ADD VIEWPORT
 	// InTabManager->RegisterTabSpawner(ViewportTabId, FOnSpawnTab::CreateSP(this, &FMyCustomAssetEditor::SpawnTab_Viewport))
 	// 	.SetDisplayName(LOCTEXT("ViewportTabLabel", "Viewport"))
 	// 	.SetGroup(WorkspaceMenuCategory.ToSharedRef())
@@ -45,18 +47,24 @@ void FMyCustomAssetEditor::UnregisterTabSpawners(const TSharedRef<FTabManager>& 
 	
 	// For every spawned tab...don't forget to unregister it ;)
 	InTabManager->UnregisterTabSpawner(DetailsTabId);
-	InTabManager->UnregisterTabSpawner(ViewportTabId);
+	// TODO: ADD VIEWPORT
+	// InTabManager->UnregisterTabSpawner(ViewportTabId);
 
 	// InTabManager->UnregisterAllTabSpawners();  // would this do the same as above ?
 }
 
-void FMyCustomAssetEditor::InitMyCustomAssetEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, const TArray<UObject*>& ObjectsToEdit)
+void FMyCustomAssetEditor::InitMyCustomAssetEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, class UMyCustomAsset* InMyCustomAsset)
 {
-	// For having a Details View/panel, the Property Editor Module is needed and that has a handy method! (CreateDetailView)
+	MyCustomAssetBeingEdited = InMyCustomAsset;
+	
+	// For having a Details View/panel, the PropertyEditor Module is used and it has a handy method! (CreateDetailView)
+	// Without using the PropertyEditor Module, the way to make a details tab seems to be doing some kind of SSingleObjectDetailsPanel (as seen in LidarPointCloudEditor Module).
+	// The way of using the PropertyEditor Module seems to be much more convenient to use. If more is needed then a Details Customization would also be used (as seen in StaticMeshEditor Module)
+	
 	FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>( "PropertyEditor" );
 
 	// The following block does the same as the constructor below...but it is more explicitly done here for my learning benefit ;)
-	// Also some editors do it like this...and some do it like below? (only big difference is that one is const and the other isn't...)
+	// Also some editors do it like this...and some do it like below? (only big difference here is that one is const and the other isn't...)
 	FDetailsViewArgs DetailsViewArgs;
 	DetailsViewArgs.bUpdatesFromSelection = false;
 	DetailsViewArgs.bLockable = false;
@@ -72,6 +80,7 @@ void FMyCustomAssetEditor::InitMyCustomAssetEditor(const EToolkitMode::Type Mode
 	// 	/*bHideSelectionTip*/false );
 	
 	DetailsView = PropertyEditorModule.CreateDetailView( DetailsViewArgs );
+	DetailsView->SetObject(InMyCustomAsset);  // Don't forget this! Otherwise the details tab will be EMPTY ;)
 
 	// TODO: EXPLAIN
 	const TSharedRef<FTabManager::FLayout> StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_CustomAssetEditor_Layout_v0")
@@ -95,10 +104,13 @@ void FMyCustomAssetEditor::InitMyCustomAssetEditor(const EToolkitMode::Type Mode
 				->AddTab(DetailsTabId, ETabState::OpenedTab)
 			)
 		)
+		//TODO: ADD VIEWPORT
 	);
 	
 	// This NEEDs to be called so that the default layout, menu and toolbar are created.
-	FAssetEditorToolkit::InitAssetEditor(Mode, InitToolkitHost,	CustomAssetEditorAppIdentifier,	StandaloneDefaultLayout,/*bCreateDefaultStandaloneMenu*/ true,/*bCreateDefaultToolbar*/ true, ObjectsToEdit);
+	const bool bCreateDefaultStandaloneMenu = true;
+	const bool bCreateDefaultToolbar = true;
+	FAssetEditorToolkit::InitAssetEditor(Mode, InitToolkitHost, CustomAssetEditorAppIdentifier, StandaloneDefaultLayout, bCreateDefaultStandaloneMenu, bCreateDefaultToolbar, InMyCustomAsset);
 
 	RegenerateMenusAndToolbars();
 }
@@ -130,10 +142,11 @@ FLinearColor FMyCustomAssetEditor::GetWorldCentricTabColorScale() const
 
 void FMyCustomAssetEditor::AddReferencedObjects(FReferenceCollector& Collector)
 {
-	Collector.AddReferencedObject(MyCustomAsset);
+	Collector.AddReferencedObject(MyCustomAssetBeingEdited);
 }
 
-// Basically a copy of SimpleAssetEditor::SpawnPropertiesTab method for now
+// Basically a copy of SimpleAssetEditor::SpawnPropertiesTab method.
+// If using the DetailsView from IDetailsView, this seems to be the method to use. This is also done in the StaticMeshEditor Module (the SpawnTab_Properties method)
 TSharedRef<SDockTab> FMyCustomAssetEditor::SpawnTab_Details(const FSpawnTabArgs& Args) const
 {
 	// Should ALWAYS check if the TabType is the correct TabId String
@@ -148,6 +161,7 @@ TSharedRef<SDockTab> FMyCustomAssetEditor::SpawnTab_Details(const FSpawnTabArgs&
 		];
 }
 
+// TODO: ADD VIEWPORT
 // TSharedRef<SDockTab> FMyCustomAssetEditor::SpawnTab_Viewport(const FSpawnTabArgs& Args) const
 // {
 // 	check(Args.GetTabId().TabType == ViewportTabId);

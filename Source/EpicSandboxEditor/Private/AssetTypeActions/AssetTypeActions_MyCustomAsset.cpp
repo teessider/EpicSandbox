@@ -30,7 +30,13 @@ void FAssetTypeActions_MyCustomAsset::OpenAssetEditor(const TArray<UObject*>& In
 {
 	const EToolkitMode::Type Mode = EditWithinLevelEditor.IsValid() ? EToolkitMode::WorldCentric : EToolkitMode::Standalone;
 
-	// TODO: FIX THIS TO BE LIKE NiagaraSystem method...(with singular asset signature) 
-	FMyCustomAssetEditor* NewCustomAssetEditor(new FMyCustomAssetEditor());
-	NewCustomAssetEditor->InitMyCustomAssetEditor(Mode, EditWithinLevelEditor, InObjects);
+	// The for loop here is similar to every other Asset Editor opening (without any special things done...for now)
+	for (auto ObjIt = InObjects.CreateConstIterator(); ObjIt; ++ObjIt)
+	{
+		if (UMyCustomAsset* MyCustomAsset = Cast<UMyCustomAsset>(*ObjIt))
+		{
+			const TSharedRef<FMyCustomAssetEditor> NewCustomAssetEditor(new FMyCustomAssetEditor());
+			NewCustomAssetEditor->InitMyCustomAssetEditor(Mode, EditWithinLevelEditor, MyCustomAsset);
+		}
+	}
 }

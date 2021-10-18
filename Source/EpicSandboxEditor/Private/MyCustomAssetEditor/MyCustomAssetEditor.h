@@ -3,9 +3,10 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "MyCustomAsset.h"
 #include "Toolkits/IToolkitHost.h"
 #include "Toolkits/AssetEditorToolkit.h"
+
+class UMyCustomAsset;
 
 class IDetailsView;
 class SDockTab;
@@ -14,7 +15,7 @@ class EPICSANDBOXEDITOR_API FMyCustomAssetEditor final : public FAssetEditorTool
 {
 public:
 	FMyCustomAssetEditor()
-		: MyCustomAsset(nullptr)
+		: MyCustomAssetBeingEdited(nullptr)
 	{}
 	
 	/** Destructor */
@@ -22,9 +23,8 @@ public:
 
 	virtual void RegisterTabSpawners(const TSharedRef<class FTabManager>& InTabManager) override;
 	virtual void UnregisterTabSpawners(const TSharedRef<class FTabManager>& InTabManager) override;
-
-	// TODO: Change this signature to accept ONLY UMyCustomAsset as singular...(will need to change call in AssetTypeActions - see NiagaraSystem example)
-	void InitMyCustomAssetEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, const TArray<UObject*>& ObjectsToEdit);
+	
+	void InitMyCustomAssetEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, class UMyCustomAsset* InMyCustomAsset);
 	
 	
 	//~ Begin FAssetEditorToolkit
@@ -41,7 +41,7 @@ public:
 
 private:
 	/** The currently viewed MyCustomAsset which potentially contains many meshes */
-	UMyCustomAsset* MyCustomAsset;
+	UMyCustomAsset* MyCustomAssetBeingEdited;
 
 	
 	
