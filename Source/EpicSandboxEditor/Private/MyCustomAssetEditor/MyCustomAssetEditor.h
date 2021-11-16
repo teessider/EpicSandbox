@@ -21,8 +21,10 @@ public:
 	/** Destructor */
 	virtual ~FMyCustomAssetEditor() override;
 
+	// IToolkit interface
 	virtual void RegisterTabSpawners(const TSharedRef<class FTabManager>& InTabManager) override;
 	virtual void UnregisterTabSpawners(const TSharedRef<class FTabManager>& InTabManager) override;
+	// End of IToolkit interface
 	
 	void InitMyCustomAssetEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, class UMyCustomAsset* InMyCustomAsset);
 	
@@ -51,6 +53,8 @@ private:
 
 	/** Details view */
 	TSharedPtr<class IDetailsView> DetailsView;
+	// /** Preview Viewport (Preview Scene) Widget */
+	// TSharedPtr<class SMyCustomAssetEditorViewport> Viewport;
 	
 	/** Custom Asset Editor App Identifier String */
 	static const FName CustomAssetEditorAppIdentifier;

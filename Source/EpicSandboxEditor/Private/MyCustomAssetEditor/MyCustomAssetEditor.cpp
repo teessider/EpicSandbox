@@ -3,6 +3,7 @@
 
 #include "MyCustomAssetEditor.h"
 #include "MyCustomAsset.h"
+// #include "SMyCustomAssetEditorViewport.h"
 
 #define LOCTEXT_NAMESPACE "CustomAssetEditor"
 
@@ -82,6 +83,10 @@ void FMyCustomAssetEditor::InitMyCustomAssetEditor(const EToolkitMode::Type Mode
 	DetailsView = PropertyEditorModule.CreateDetailView( DetailsViewArgs );
 	DetailsView->SetObject(InMyCustomAsset);  // Don't forget this! Otherwise the details tab will be EMPTY ;)
 
+	// TSharedPtr<FMyCustomAssetEditor> MyCustomAssetEditor = SharedThis(this); 
+	//
+	// Viewport = SNew(SMyCustomAssetEditorViewport).MyCustomAssetEditor(SharedThis(this)).ObjectToEdit(MyCustomAssetBeingEdited);
+
 	// TODO: EXPLAIN
 	const TSharedRef<FTabManager::FLayout> StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_CustomAssetEditor_Layout_v0")
 	->AddArea
@@ -91,17 +96,28 @@ void FMyCustomAssetEditor::InitMyCustomAssetEditor(const EToolkitMode::Type Mode
 		->Split
 		(
 			FTabManager::NewStack()
-			->SetSizeCoefficient(0.1f)
+			->SetSizeCoefficient(0.1f) // for each split, each size coefficient should equal to the sum of 1.0!
 			->SetHideTabWell( true )
 			->AddTab(GetToolbarTabId(), ETabState::OpenedTab)
 		)
 		->Split
 		(
 			FTabManager::NewSplitter()
+			// ->SetOrientation(Orient_Horizontal)
+			// ->SetSizeCoefficient(0.9f)
+			// ->Split
+			// (
+			// 	FTabManager::NewStack()
+			// 	->SetSizeCoefficient(0.6f)
+			// 	->AddTab(ViewportTabId, ETabState::OpenedTab)
+			// 	->SetHideTabWell(true)
+			// )
 			->Split
 			(
 				FTabManager::NewStack()
+				// ->SetSizeCoefficient(0.4f)
 				->AddTab(DetailsTabId, ETabState::OpenedTab)
+				// ->SetHideTabWell(true)
 			)
 		)
 		//TODO: ADD VIEWPORT
