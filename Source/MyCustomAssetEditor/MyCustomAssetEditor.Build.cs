@@ -1,0 +1,36 @@
+﻿// Fill out your copyright notice in the Description page of Project Settings.
+
+using UnrealBuildTool;
+
+public class MyCustomAssetEditor : ModuleRules
+{
+	public MyCustomAssetEditor(ReadOnlyTargetRules Target) : base(Target)
+	{
+		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
+
+		PublicDependencyModuleNames.AddRange(
+			new []
+			{
+				"Engine"
+			}
+			);
+		
+		// Since almost all the MyCustomAssetEditor module is in the private, add them here
+		PrivateDependencyModuleNames.AddRange(
+			new []
+		{
+			"Core", 
+			"CoreUObject",
+			"UnrealEd",
+			"EditorStyle",
+			"SlateCore",
+			"Slate",
+			"AdvancedPreviewScene",
+			"InputCore"
+		}
+		);
+		
+		// Runtime Module is needed as dependency
+		PrivateDependencyModuleNames.AddRange(new [] { "EpicSandbox" });
+	}
+}

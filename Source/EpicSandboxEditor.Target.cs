@@ -9,6 +9,6 @@ public class EpicSandboxEditorTarget : TargetRules
 	{
 		Type = TargetType.Editor;
 		DefaultBuildSettings = BuildSettingsVersion.V2;  // needed to avoid backwards compat mode
-        ExtraModuleNames.AddRange( new[] { "EpicSandbox", "EpicSandboxEditor" } );
+        ExtraModuleNames.AddRange( new[] { "EpicSandbox", "EpicSandboxEditor", "MyCustomAssetEditor" } );
 	}
 }

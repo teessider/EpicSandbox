@@ -14,7 +14,7 @@ public class EpicSandboxEditor : ModuleRules
 				"Engine"
 			}
 			);
-		
+		// These are Engine modules
 		// Since almost all the EpicSandbox Editor module is in the private, add them here
 		PrivateDependencyModuleNames.AddRange(
 			new []
@@ -29,7 +29,7 @@ public class EpicSandboxEditor : ModuleRules
 		}
 		);
 		
-		// Runtime Module is needed as dependency
-		PrivateDependencyModuleNames.AddRange(new [] { "EpicSandbox" });
+		// Runtime Module is needed as dependency + MyCustomAssetEditor
+		PrivateDependencyModuleNames.AddRange(new [] { "EpicSandbox", "MyCustomAssetEditor" });
 	}
 }

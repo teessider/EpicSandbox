@@ -11,7 +11,7 @@ class UMyCustomAsset;
 class IDetailsView;
 class SDockTab;
 
-class EPICSANDBOXEDITOR_API FMyCustomAssetEditor final : public FAssetEditorToolkit, public FGCObject
+class MYCUSTOMASSETEDITOR_API FMyCustomAssetEditor final : public FAssetEditorToolkit, public FGCObject
 {
 public:
 	FMyCustomAssetEditor()
@@ -49,12 +49,12 @@ private:
 	
 	/** Create the different tabs and their content */
 	TSharedRef<SDockTab> SpawnTab_Details( const FSpawnTabArgs& Args ) const;
-	// TSharedRef<SDockTab> SpawnTab_Viewport( const FSpawnTabArgs& Args ) const;
+	TSharedRef<SDockTab> SpawnTab_Viewport( const FSpawnTabArgs& Args ) const;
 
 	/** Details view */
 	TSharedPtr<class IDetailsView> DetailsView;
 	// /** Preview Viewport (Preview Scene) Widget */
-	// TSharedPtr<class SMyCustomAssetEditorViewport> Viewport;
+	TSharedPtr<class SMyCustomAssetEditorViewport> Viewport;
 	
 	/** Custom Asset Editor App Identifier String */
 	static const FName CustomAssetEditorAppIdentifier;

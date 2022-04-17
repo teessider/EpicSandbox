@@ -4,7 +4,7 @@
 #include "AssetTypeActions_MyCustomAsset.h"
 #include "EpicSandboxEditor.h"
 #include "MyCustomAsset.h"
-#include "MyCustomAssetEditor/MyCustomAssetEditor.h"
+#include "MyCustomAssetEditor.h"
 
 FColor FAssetTypeActions_MyCustomAsset::GetTypeColor() const
 {
