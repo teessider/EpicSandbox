@@ -88,18 +88,11 @@ void FMyCustomAssetEditor::InitMyCustomAssetEditor(const EToolkitMode::Type Mode
 	Viewport = SNew(SMyCustomAssetEditorViewport).MyCustomAssetEditor(SharedThis(this)).ObjectToEdit(MyCustomAssetBeingEdited);
 
 	// TODO: EXPLAIN
-	const TSharedRef<FTabManager::FLayout> StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_MyCustomAssetEditor_Layout_v0")
+	const TSharedRef<FTabManager::FLayout> StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_MyCustomAssetEditor_Layout_v1")
 	->AddArea
 	(
 		FTabManager::NewPrimaryArea()
 		->SetOrientation(Orient_Vertical)
-		->Split
-		(
-			FTabManager::NewStack()
-			->SetSizeCoefficient(0.1f) // for each split, each size coefficient should equal to the sum of 1.0!
-			->SetHideTabWell( true )
-			->AddTab(GetToolbarTabId(), ETabState::OpenedTab)
-		)
 		->Split
 		(
 			FTabManager::NewSplitter()
@@ -108,7 +101,7 @@ void FMyCustomAssetEditor::InitMyCustomAssetEditor(const EToolkitMode::Type Mode
 			->Split
 			(
 				FTabManager::NewStack()
-				->SetSizeCoefficient(0.6f)
+				->SetSizeCoefficient(0.6f) // for each split, each size coefficient should equal to the sum of 1.0!
 				->AddTab(ViewportTabId, ETabState::OpenedTab)
 				->SetHideTabWell(true)
 			)
