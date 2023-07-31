@@ -161,7 +161,6 @@ TSharedRef<SDockTab> FMyCustomAssetEditor::SpawnTab_Details(const FSpawnTabArgs&
 	check(Args.GetTabId().TabType == DetailsTabId);
 
 	return SNew(SDockTab)
-		.Icon(FEditorStyle::GetBrush("GenericEditor.Tabs.Properties"))
 		.Label(LOCTEXT("GenericDetailsTitle", "Details"))
 		.TabColorScale(GetTabColorScale())
 		[
