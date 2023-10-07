@@ -64,8 +64,8 @@ TSharedRef<SEditorViewport> SMyCustomAssetEditorViewport::GetViewportWidget()
 
 TSharedPtr<FExtender> SMyCustomAssetEditorViewport::GetExtenders() const
 {
-	TSharedPtr<FExtender> Result(MakeShareable(new FExtender));
-	// TSharedPtr<FExtender> Result(MakeShared<FExtender>());
+	//TSharedPtr<FExtender> Result(MakeShareable(new FExtender));
+	TSharedPtr<FExtender> Result(MakeShared<FExtender>());
 	return Result;
 }
 
