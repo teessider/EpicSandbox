@@ -8,7 +8,7 @@ public class EpicSandboxTarget : TargetRules
 	public EpicSandboxTarget(TargetInfo Target) : base (Target)
 	{
 		Type = TargetType.Game;
-
-        ExtraModuleNames.AddRange( new string[] { "EpicSandbox" } );
+		IncludeOrderVersion = EngineIncludeOrderVersion.Latest;
+		ExtraModuleNames.AddRange( new string[] { "EpicSandbox" } );
 	}
 }
