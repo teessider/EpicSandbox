@@ -15,7 +15,7 @@ public:
 			TEXT("MyCustomAssetEditor"), // Context name for fast lookup
 			NSLOCTEXT("Contexts", "MyCustomAssetEditor", "My Custom Asset Editor"),
 			NAME_None, // No Parent Context. Most Commands classes do NOT have a parent context. StaticMeshEditorCommands does though
-			FEditorStyle::GetStyleSetName() // Icon Style Set
+			FAppStyle::GetAppStyleSetName() // Icon Style Set
 			)
 	{
 	}
