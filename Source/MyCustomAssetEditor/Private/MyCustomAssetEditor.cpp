@@ -88,7 +88,7 @@ void FMyCustomAssetEditor::InitMyCustomAssetEditor(const EToolkitMode::Type Mode
 	Viewport = SNew(SMyCustomAssetEditorViewport).MyCustomAssetEditor(SharedThis(this)).ObjectToEdit(MyCustomAssetBeingEdited);
 
 	// TODO: EXPLAIN
-	const TSharedRef<FTabManager::FLayout> StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_MyCustomAssetEditor_Layout_v1")
+	const TSharedRef<FTabManager::FLayout> StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_MyCustomAssetEditor_Layout_v2")
 	->AddArea
 	(
 		FTabManager::NewPrimaryArea()
