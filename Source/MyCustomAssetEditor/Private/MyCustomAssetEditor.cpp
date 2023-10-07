@@ -11,8 +11,8 @@
 
 const FName FMyCustomAssetEditor::CustomAssetEditorAppIdentifier(TEXT("MyCustomAssetEditorApp"));
 
-const FName FMyCustomAssetEditor::DetailsTabId(TEXT("CustomAssetEditor_Details"));
-const FName FMyCustomAssetEditor::ViewportTabId(TEXT("CustomAssetEditor_Viewport"));
+const FName FMyCustomAssetEditor::DetailsTabId(TEXT("MyCustomAssetEditor_Details"));
+const FName FMyCustomAssetEditor::ViewportTabId(TEXT("MyCustomAssetEditor_Viewport"));
 
 // TODO: GET ASSET EDITOR VIEWPORT WORKING
 
