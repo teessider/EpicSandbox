@@ -118,7 +118,7 @@ void FMyCustomAssetEditor::InitMyCustomAssetEditor(const EToolkitMode::Type Mode
 	// This NEEDs to be called so that the default layout, menu and toolbar are created.
 	const bool bCreateDefaultStandaloneMenu = true;
 	const bool bCreateDefaultToolbar = true;
-	FAssetEditorToolkit::InitAssetEditor(Mode, InitToolkitHost, CustomAssetEditorAppIdentifier, StandaloneDefaultLayout, bCreateDefaultStandaloneMenu, bCreateDefaultToolbar, InMyCustomAsset);
+	InitAssetEditor(Mode, InitToolkitHost, CustomAssetEditorAppIdentifier, StandaloneDefaultLayout, bCreateDefaultStandaloneMenu, bCreateDefaultToolbar, InMyCustomAsset);
 
 	RegenerateMenusAndToolbars();
 }
