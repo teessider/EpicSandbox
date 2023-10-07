@@ -7,8 +7,7 @@
 #include "MyCustomAsset.h"
 
 #include "Slate/SceneViewport.h"
-
-// #include "ComponentReregisterContext.h" // For PREVIEW_COMPONENT
+#include "ComponentReregisterContext.h" // For PREVIEW_COMPONENT
 
 void SMyCustomAssetEditorViewport::Construct(const FArguments& InArgs)
 {
