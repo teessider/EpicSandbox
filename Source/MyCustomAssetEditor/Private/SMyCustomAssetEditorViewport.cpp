@@ -57,6 +57,11 @@ void SMyCustomAssetEditorViewport::AddReferencedObjects(FReferenceCollector& Col
 	Collector.AddReferencedObject(PreviewMeshComponent);
 }
 
+FString SMyCustomAssetEditorViewport::GetReferencerName() const
+{
+	return TEXT("SMyCustomAssetEditorViewport");
+}
+
 TSharedRef<SEditorViewport> SMyCustomAssetEditorViewport::GetViewportWidget()
 {
 	return SharedThis(this);
@@ -103,6 +108,7 @@ TSharedRef<FEditorViewportClient> SMyCustomAssetEditorViewport::MakeEditorViewpo
 
 void SMyCustomAssetEditorViewport::BindCommands()
 {
+	// Inside of SEditorViewport::BindCommands()
 	SEditorViewport::BindCommands();
 
 	const FMyCustomAssetEditorCommands& Commands = FMyCustomAssetEditorCommands::Get();

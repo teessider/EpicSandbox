@@ -39,6 +39,7 @@ public:
 	// FSerializableObject interface
 	// This comes from FGCObject class
 	virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+	virtual FString GetReferencerName() const override;
 	// End of FSerializableObject interface
 
 private:

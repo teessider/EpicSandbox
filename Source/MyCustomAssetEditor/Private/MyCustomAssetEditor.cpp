@@ -153,6 +153,11 @@ void FMyCustomAssetEditor::AddReferencedObjects(FReferenceCollector& Collector)
 	Collector.AddReferencedObject(MyCustomAssetBeingEdited);
 }
 
+FString FMyCustomAssetEditor::GetReferencerName() const
+{
+	return TEXT("FMyCustomAssetEditor");
+}
+
 // Basically a copy of SimpleAssetEditor::SpawnPropertiesTab method.
 // If using the DetailsView from IDetailsView, this seems to be the method to use. This is also done in the StaticMeshEditor Module (the SpawnTab_Properties method)
 TSharedRef<SDockTab> FMyCustomAssetEditor::SpawnTab_Details(const FSpawnTabArgs& Args) const

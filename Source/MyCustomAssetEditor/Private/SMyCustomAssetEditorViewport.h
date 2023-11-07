@@ -35,6 +35,7 @@ public:
 
 	// FGCObject interface
 	virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
+	virtual FString GetReferencerName() const override;
 	// End of FGCObject interface
 
 	/** Set the parent tab of the viewport for determining visibility */
