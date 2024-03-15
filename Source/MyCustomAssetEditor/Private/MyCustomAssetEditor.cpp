@@ -7,8 +7,6 @@
 
 #include "MyCustomAsset.h"
 
-#define LOCTEXT_NAMESPACE "MyCustomAssetEditor"
-
 const FName FMyCustomAssetEditor::CustomAssetEditorAppIdentifier(TEXT("MyCustomAssetEditorApp"));
 
 const FName FMyCustomAssetEditor::DetailsTabId(TEXT("MyCustomAssetEditor_Details"));
@@ -22,7 +20,7 @@ void FMyCustomAssetEditor::RegisterTabSpawners(const TSharedRef<FTabManager>& In
 {
 	// VIP - Adds the Custom Editor Tab/Window "group" to the local Workspace - 
 	// A Core Slate thing to do (every editor tab/window does this when Registering Tab Spawners for the TabManager
-	WorkspaceMenuCategory = InTabManager->AddLocalWorkspaceMenuCategory(LOCTEXT("WorkspaceMenu_MyCustomAssetEditor", "My Custom Asset Editor"));
+	WorkspaceMenuCategory = InTabManager->AddLocalWorkspaceMenuCategory(INVTEXT("My Custom Asset Editor"));
 
 	// For each tab within the editor window/group, it needs to be registered with the TabManager
 	// The one from FAssetEditorToolkit has the Main Toolbar built-in hence why it is always done first
@@ -31,12 +29,12 @@ void FMyCustomAssetEditor::RegisterTabSpawners(const TSharedRef<FTabManager>& In
 
 	// Now for the rest of the editor window/group tabs to be registered with the TabManager
 	InTabManager->RegisterTabSpawner(DetailsTabId, FOnSpawnTab::CreateSP(this, &FMyCustomAssetEditor::SpawnTab_Details))
-		.SetDisplayName(LOCTEXT("PropertiesTabLabel", "Details"))
+		.SetDisplayName(INVTEXT("Details"))
 		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
 		.SetIcon(FSlateIcon(FAppStyle::GetAppStyleSetName(), "LevelEditor.Tabs.Details"));
 	
 	InTabManager->RegisterTabSpawner(ViewportTabId, FOnSpawnTab::CreateSP(this, &FMyCustomAssetEditor::SpawnTab_Viewport))
-		.SetDisplayName(LOCTEXT("ViewportTabLabel", "Viewport"))
+		.SetDisplayName(INVTEXT("Viewport"))
 		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
 		.SetIcon(FSlateIcon(FAppStyle::GetAppStyleSetName(), "LevelEditor.Tabs.Viewports"));
 		
@@ -135,12 +133,12 @@ FName FMyCustomAssetEditor::GetToolkitFName() const
 
 FText FMyCustomAssetEditor::GetBaseToolkitName() const
 {
-	return LOCTEXT("AppLabel", "My Custom Asset Editor");
+	return INVTEXT("My Custom Asset Editor");
 }
 
 FString FMyCustomAssetEditor::GetWorldCentricTabPrefix() const
 {
-	return LOCTEXT("WorldCentricTabPrefix", "My Custom Asset ").ToString();
+	return TEXT("My Custom Asset ");
 }
 
 FLinearColor FMyCustomAssetEditor::GetWorldCentricTabColorScale() const
@@ -166,7 +164,7 @@ TSharedRef<SDockTab> FMyCustomAssetEditor::SpawnTab_Details(const FSpawnTabArgs&
 	check(Args.GetTabId().TabType == DetailsTabId);
 
 	return SNew(SDockTab)
-		.Label(LOCTEXT("GenericDetailsTitle", "Details"))
+		.Label(INVTEXT("Details"))
 		.TabColorScale(GetTabColorScale())
 		[
 			DetailsView.ToSharedRef()
@@ -180,7 +178,7 @@ TSharedRef<SDockTab> FMyCustomAssetEditor::SpawnTab_Viewport(const FSpawnTabArgs
 
 	TSharedRef<SDockTab> SpawnedTab =
 		SNew(SDockTab)
-		.Label(LOCTEXT("ViewportTab_Title", "Viewport"))
+		.Label(INVTEXT("Viewport"))
 		[
 			Viewport.ToSharedRef()
 		];
@@ -189,4 +187,3 @@ TSharedRef<SDockTab> FMyCustomAssetEditor::SpawnTab_Viewport(const FSpawnTabArgs
 	
 	return SpawnedTab;
 }
-#undef LOCTEXT_NAMESPACE
