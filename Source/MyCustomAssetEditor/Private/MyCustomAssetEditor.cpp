@@ -12,10 +12,6 @@ const FName FMyCustomAssetEditor::CustomAssetEditorAppIdentifier(TEXT("MyCustomA
 const FName FMyCustomAssetEditor::DetailsTabId(TEXT("MyCustomAssetEditor_Details"));
 const FName FMyCustomAssetEditor::ViewportTabId(TEXT("MyCustomAssetEditor_Viewport"));
 
-// TODO: GET ASSET EDITOR VIEWPORT WORKING
-
-// CURRENT PROGRESS: Got it to compile so far(with just the Main Asset Editor Toolbar) but it is not called by anything...
-// will have to do that via the AssetTypeActions class...
 void FMyCustomAssetEditor::RegisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
 {
 	// VIP - Adds the Custom Editor Tab/Window "group" to the local Workspace - 
@@ -171,7 +167,6 @@ TSharedRef<SDockTab> FMyCustomAssetEditor::SpawnTab_Details(const FSpawnTabArgs&
 		];
 }
 
-// TODO: ADD VIEWPORT
 TSharedRef<SDockTab> FMyCustomAssetEditor::SpawnTab_Viewport(const FSpawnTabArgs& Args) const
 {
 	check(Args.GetTabId().TabType == ViewportTabId);
