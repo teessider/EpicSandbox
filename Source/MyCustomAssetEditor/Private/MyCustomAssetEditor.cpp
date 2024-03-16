@@ -3,7 +3,8 @@
 
 #include "MyCustomAssetEditor.h"
 #include "SMyCustomAssetEditorViewport.h"
-#include "EditorStyleSet.h"
+
+#include "AdvancedPreviewSceneModule.h"
 
 #include "MyCustomAsset.h"
 
@@ -11,6 +12,7 @@ const FName FMyCustomAssetEditor::CustomAssetEditorAppIdentifier(TEXT("MyCustomA
 
 const FName FMyCustomAssetEditor::DetailsTabId(TEXT("MyCustomAssetEditor_Details"));
 const FName FMyCustomAssetEditor::ViewportTabId(TEXT("MyCustomAssetEditor_Viewport"));
+const FName FMyCustomAssetEditor::AdvancedPreviewSettingsTabId(TEXT("MyCustomAssetEditor_AdvancedPreviewSettings"));
 
 void FMyCustomAssetEditor::RegisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
 {
@@ -34,6 +36,10 @@ void FMyCustomAssetEditor::RegisterTabSpawners(const TSharedRef<FTabManager>& In
 		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
 		.SetIcon(FSlateIcon(FAppStyle::GetAppStyleSetName(), "LevelEditor.Tabs.Viewports"));
 		
+	InTabManager->RegisterTabSpawner(AdvancedPreviewSettingsTabId, FOnSpawnTab::CreateSP(this, &FMyCustomAssetEditor::SpawnTab_AdvancedPreviewSettings))
+		.SetDisplayName(INVTEXT("Preview Scene Settings"))
+		.SetGroup(WorkspaceMenuCategory.ToSharedRef())
+		.SetIcon(FSlateIcon(FAppStyle::GetAppStyleSetName(), "LevelEditor.Tabs.Details"));
 }
 
 void FMyCustomAssetEditor::UnregisterTabSpawners(const TSharedRef<FTabManager>& InTabManager)
@@ -44,6 +50,7 @@ void FMyCustomAssetEditor::UnregisterTabSpawners(const TSharedRef<FTabManager>& 
 	// For every spawned tab...don't forget to unregister it ;)
 	InTabManager->UnregisterTabSpawner(DetailsTabId);
 	InTabManager->UnregisterTabSpawner(ViewportTabId);
+	InTabManager->UnregisterTabSpawner(AdvancedPreviewSettingsTabId);
 
 	// InTabManager->UnregisterAllTabSpawners();  // This would this do the same as above in one go?
 }
@@ -82,7 +89,7 @@ void FMyCustomAssetEditor::InitMyCustomAssetEditor(const EToolkitMode::Type Mode
 	Viewport = SNew(SMyCustomAssetEditorViewport).MyCustomAssetEditor(SharedThis(this)).ObjectToEdit(MyCustomAssetBeingEdited);
 
 	// TODO: EXPLAIN
-	const TSharedRef<FTabManager::FLayout> StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_MyCustomAssetEditor_Layout_v2")
+	const TSharedRef<FTabManager::FLayout> StandaloneDefaultLayout = FTabManager::NewLayout("Standalone_MyCustomAssetEditor_Layout_v2.1")
 	->AddArea
 	(
 		FTabManager::NewPrimaryArea()
@@ -104,7 +111,8 @@ void FMyCustomAssetEditor::InitMyCustomAssetEditor(const EToolkitMode::Type Mode
 				FTabManager::NewStack()
 				->SetSizeCoefficient(0.4f)
 				->AddTab(DetailsTabId, ETabState::OpenedTab)
-				->SetHideTabWell(true)
+				->AddTab(AdvancedPreviewSettingsTabId, ETabState::ClosedTab)
+				->SetForegroundTab(DetailsTabId)
 			)
 		)
 	);
@@ -180,5 +188,28 @@ TSharedRef<SDockTab> FMyCustomAssetEditor::SpawnTab_Viewport(const FSpawnTabArgs
 	
 	Viewport->SetParentTab(SpawnedTab);
 	
+	return SpawnedTab;
+}
+
+TSharedRef<SDockTab> FMyCustomAssetEditor::SpawnTab_AdvancedPreviewSettings(const FSpawnTabArgs& SpawnTabArgs) const
+{
+	check(SpawnTabArgs.GetTabId().TabType == AdvancedPreviewSettingsTabId);
+
+	TSharedRef<SWidget> InWidget = SNullWidget::NullWidget;
+	if (Viewport.IsValid())
+	{
+		FAdvancedPreviewSceneModule& AdvancedPreviewSceneModule = FModuleManager::LoadModuleChecked<FAdvancedPreviewSceneModule>("AdvancedPreviewScene");
+		InWidget = AdvancedPreviewSceneModule.CreateAdvancedPreviewSceneSettingsWidget(Viewport->GetPreviewScene());
+	}
+
+	TSharedRef<SDockTab> SpawnedTab = SNew(SDockTab)
+		.Label(INVTEXT("Preview Scene Settings"))
+		[
+			SNew(SBox)
+			[
+				InWidget
+			]
+		];
+
 	return SpawnedTab;
 }

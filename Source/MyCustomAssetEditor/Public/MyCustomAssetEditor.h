@@ -51,6 +51,7 @@ private:
 	/** Create the different tabs and their content */
 	TSharedRef<SDockTab> SpawnTab_Details( const FSpawnTabArgs& Args ) const;
 	TSharedRef<SDockTab> SpawnTab_Viewport( const FSpawnTabArgs& Args ) const;
+	TSharedRef<SDockTab> SpawnTab_AdvancedPreviewSettings( const FSpawnTabArgs& SpawnTabArgs ) const;
 
 	/** Details view */
 	TSharedPtr<class IDetailsView> DetailsView;
@@ -63,4 +64,5 @@ private:
 	/**	The tab ids for all the tabs used */
 	static const FName DetailsTabId;
 	static const FName ViewportTabId;
+	static const FName AdvancedPreviewSettingsTabId;
 };
