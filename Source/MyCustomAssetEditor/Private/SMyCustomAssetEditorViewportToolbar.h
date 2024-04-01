@@ -29,6 +29,24 @@ private:
 	TSharedRef<SWidget> GenerateViewMenu() const;
 
 	/**
+	 * Returns the label for the Viewport type tool bar menu, which changes depending on the current selected type
+	 *
+	 * @return	Label to use for this Menu
+	 */
+	FText GetCameraMenuLabel() const;
+
+	/* Returns the label icon for the Camera tool bar menu, which changes depending on viewport type 
+	 *
+	 * @return	Label icon to use for this menu label
+	 */
+	const FSlateBrush* GetCameraMenuLabelIcon() const;
+
+	/**
+	 * Generates the toolbar viewport type menu content 
+	 */
+	TSharedRef<SWidget> GenerateViewportTypeMenu() const;
+
+	/**
 	* Generates the Show menu content
 	*/
 	TSharedRef<SWidget> GenerateShowMenu() const;

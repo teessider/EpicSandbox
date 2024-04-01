@@ -45,6 +45,19 @@ void SMyCustomAssetEditorViewportToolbar::Construct(const FArguments& InArgs, TS
 		.Padding(ToolbarSlotPadding)
 		[
 			SNew(SEditorViewportToolbarMenu)
+			.ToolTipText(INVTEXT("Viewport Options. Use this to switch between different orthographic or perspective views."))
+			.ParentToolBar(SharedThis(this))
+			.Cursor(EMouseCursor::Default)
+			.Label(this, &SMyCustomAssetEditorViewportToolbar::GetCameraMenuLabel)
+			.LabelIcon( this, &SMyCustomAssetEditorViewportToolbar::GetCameraMenuLabelIcon)
+			.AddMetaData<FTagMetaData>(FTagMetaData(TEXT("EditorViewportToolBar.CameraMenu")))
+			.OnGetMenuContent(this, &SMyCustomAssetEditorViewportToolbar::GenerateViewportTypeMenu)
+		]
+		+SHorizontalBox::Slot()
+		.AutoWidth()
+		.Padding(ToolbarSlotPadding)
+		[
+			SNew(SEditorViewportToolbarMenu)
 			.ToolTipText(INVTEXT("Show Options. Use this enable/disable the rendering of types of scene elements."))
 			.ParentToolBar(SharedThis(this))
 			.Cursor(EMouseCursor::Default)
@@ -90,6 +103,62 @@ TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateViewMenu() cons
 	FToolMenuContext MenuContext(CommandList, MenuExtender);
 	return UToolMenus::Get()->GenerateWidget(MenuName, MenuContext);
 }
+
+FText SMyCustomAssetEditorViewportToolbar::GetCameraMenuLabel() const
+{
+	// Same as SLevelViewportToolBar
+	TSharedPtr MyCustomAssetEditorViewport(Viewport.Pin());
+	if(MyCustomAssetEditorViewport.IsValid())
+	{
+		return GetCameraMenuLabelFromViewportType(MyCustomAssetEditorViewport->GetViewportClient()->ViewportType);
+	}
+	return INVTEXT("Camera");
+}
+
+const FSlateBrush* SMyCustomAssetEditorViewportToolbar::GetCameraMenuLabelIcon() const
+{
+	// Same as SLevelViewportToolBar
+	TSharedPtr MyCustomAssetEditorViewport(Viewport.Pin());
+	if (MyCustomAssetEditorViewport.IsValid())
+	{
+		return GetCameraMenuLabelIconFromViewportType(MyCustomAssetEditorViewport->GetViewportClient()->ViewportType);
+	}
+	// Turns out SlateCore has a method for getting "No Brush"
+	// different way is in the comment..
+	// return FAppStyle::Get().GetBrush("NoBrush");
+	return FStyleDefaults::GetNoBrush();
+}
+
+TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateViewportTypeMenu() const
+{
+	static const FName MenuName("MyCustomAssetEditor.ViewportTypeMenu");
+	
+	// This is also how it is in SLevelViewportToolBar::FillCameraMenu 
+	if(!UToolMenus::Get()->IsMenuRegistered(MenuName))
+	{
+		// This is also how it is in SLevelViewportToolBar::FillCameraMenu without the extra section for placed cameras
+		// (after registering the menu in a different method)
+		UToolMenu* Menu = UToolMenus::Get()->RegisterMenu(MenuName);
+		{
+			FToolMenuSection& Section = Menu->AddSection("CameraTypes");
+			Section.AddMenuEntry(FEditorViewportCommands::Get().Perspective);
+		}
+		{
+			FToolMenuSection& Section = Menu->AddSection("LevelViewportCameraType_Ortho", INVTEXT("Orthographic"));
+			Section.AddMenuEntry(FEditorViewportCommands::Get().Top);
+			Section.AddMenuEntry(FEditorViewportCommands::Get().Bottom);
+			Section.AddMenuEntry(FEditorViewportCommands::Get().Left);
+			Section.AddMenuEntry(FEditorViewportCommands::Get().Right);
+			Section.AddMenuEntry(FEditorViewportCommands::Get().Front);
+			Section.AddMenuEntry(FEditorViewportCommands::Get().Back);
+		}
+	}
+
+	TSharedPtr<FExtender> MenuExtender = FExtender::Combine(Extenders);
+	FToolMenuContext MenuContext(CommandList, MenuExtender);
+	return UToolMenus::Get()->GenerateWidget(MenuName, MenuContext);
+}
+
 
 TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateShowMenu() const
 {
