@@ -89,6 +89,10 @@ TSharedRef<FEditorViewportClient> SMyCustomAssetEditorViewport::MakeEditorViewpo
 	EditorViewportClient->bSetListenerPosition = false;
 
 	EditorViewportClient->SetRealtime(true);
+	// It seems default viewport orientation can be set without needing a Thumbnail
+	// (although that is good for geometry type assets tbf...)
+	EditorViewportClient->SetViewLocation(EditorViewportDefs::DefaultPerspectiveViewLocation);
+	EditorViewportClient->SetViewRotation(EditorViewportDefs::DefaultPerspectiveViewRotation);
 	EditorViewportClient->VisibilityDelegate.BindSP(this, &SMyCustomAssetEditorViewport::IsVisible);
 
 	return EditorViewportClient.ToSharedRef();
