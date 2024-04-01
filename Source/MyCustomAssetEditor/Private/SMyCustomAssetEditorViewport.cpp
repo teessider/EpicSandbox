@@ -99,6 +99,10 @@ void SMyCustomAssetEditorViewport::BindCommands()
 	// Multiple Commands can use this CommandList Reference!
 	FUICommandList& CommandListRef = *CommandList;
 
+	// SEditorViewport::BindCommands contains a huge list of all the common actions one can do in a viewport
+	// eg. Camera orientations, toggling the view modes (lit, unlit etc.), focusing the viewport and so on. Very useful!
+	SEditorViewport::BindCommands();
+
 	// All Show Flag Commands are inside of FShowFlagMenuCommands so only need to call that BindCommands method here!
 	FShowFlagMenuCommands::Get().BindCommands(CommandListRef, Client);
 
@@ -109,7 +113,10 @@ void SMyCustomAssetEditorViewport::BindCommands()
 
 void SMyCustomAssetEditorViewport::OnFocusViewportToSelection()
 {
-	SEditorViewport::OnFocusViewportToSelection();
+	// It seems the focusing of the viewport is done in the corresponding ViewportClient
+	// (it does seem to contain all of the input logic rather than the viewport)
+	const TSharedRef<FMyCustomAssetEditorViewportClient> MyCustomAssetEditorViewportClient = StaticCastSharedRef<FMyCustomAssetEditorViewportClient>(EditorViewportClient.ToSharedRef());
+	return MyCustomAssetEditorViewportClient->OnFocusViewportToSelection();
 }
 
 TSharedPtr<SWidget> SMyCustomAssetEditorViewport::MakeViewportToolbar()

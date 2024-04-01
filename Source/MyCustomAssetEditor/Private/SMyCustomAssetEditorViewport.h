@@ -48,6 +48,8 @@ public:
 	
 	void ResetCamera();
 
+	TObjectPtr<UStaticMeshComponent> GetPreviewMeshComponent() const { return PreviewMeshComponent; }
+
 protected:
 	/** SEditorViewport interface */
 	virtual TSharedRef<FEditorViewportClient> MakeEditorViewportClient() override;

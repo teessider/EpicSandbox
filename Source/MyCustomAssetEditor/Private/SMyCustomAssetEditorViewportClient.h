@@ -43,6 +43,9 @@ public:
 
 	void ResetCamera();
 	
+	/** Called when viewport focuses on a selection */
+	void OnFocusViewportToSelection();
+	
 protected:
 	// FEditorViewportClient interface
 	virtual void PerspectiveCameraMoved() override;

@@ -122,6 +122,15 @@ void FMyCustomAssetEditorViewportClient::ResetCamera()
 {
 }
 
+void FMyCustomAssetEditorViewportClient::OnFocusViewportToSelection()
+{
+	const TObjectPtr<UStaticMeshComponent> PreviewMeshComponent = MyCustomAssetEditorViewportPtr.Pin()->GetPreviewMeshComponent();
+	if(PreviewMeshComponent)
+	{
+		FocusViewportOnBox(PreviewMeshComponent->Bounds.GetBox());
+	}
+}
+
 void FMyCustomAssetEditorViewportClient::PerspectiveCameraMoved()
 {
 	// Same as Lidar Point Cloud & Static Mesh Viewport Clients (except Static Mesh has more code for storing the camera position...)

@@ -2,9 +2,11 @@
 
 #include "SMyCustomAssetEditorViewportToolbar.h"
 #include "SMyCustomAssetEditorViewport.h"
+
 #include "ShowFlagFilter.h"
 #include "ShowFlagMenuCommands.h"
 #include "SEditorViewportToolBarMenu.h"
+#include "EditorViewportCommands.h"
 
 void SMyCustomAssetEditorViewportToolbar::Construct(const FArguments& InArgs, TSharedPtr<SMyCustomAssetEditorViewport> InViewport)
 {
@@ -25,6 +27,18 @@ void SMyCustomAssetEditorViewportToolbar::Construct(const FArguments& InArgs, TS
 	const FMargin ToolbarSlotPadding(4.0f, 1.0f);
 
 	const TSharedRef<SHorizontalBox> LeftToolbar = SNew(SHorizontalBox)
+		+SHorizontalBox::Slot()
+		.AutoWidth()
+		.Padding(ToolbarSlotPadding)
+		[
+			SNew(SEditorViewportToolbarMenu)
+			.ToolTipText(INVTEXT("View Options"))
+			.ParentToolBar(SharedThis(this))
+			.Cursor(EMouseCursor::Default)
+			.Image("EditorViewportToolBar.OptionsDropdown")
+			.AddMetaData<FTagMetaData>(FTagMetaData(TEXT("EditorViewportToolBar.MenuDropdown")))
+			.OnGetMenuContent(this, &SMyCustomAssetEditorViewportToolbar::GenerateViewMenu)
+		]
 		+SHorizontalBox::Slot()
 		.AutoWidth()
 		.Padding(ToolbarSlotPadding)
@@ -53,6 +67,34 @@ void SMyCustomAssetEditorViewportToolbar::Construct(const FArguments& InArgs, TS
 	SViewportToolBar::Construct(SViewportToolBar::FArguments());
 
 	Viewport = InViewport;
+}
+
+TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateViewMenu() const
+{
+	// This menu is "derived" from the one in the main Level viewport (the 3 lines) which has many camera related options
+	// (but not the Camera Views menu (has "Perspective" label)) 
+	const TSharedPtr<FExtender> MenuExtender = FExtender::Combine(Extenders);
+
+	constexpr bool bInShouldCloseWindowAfterMenuSelection = true;
+	FMenuBuilder InMenuBuilder(bInShouldCloseWindowAfterMenuSelection, Viewport.Pin()->GetCommandList(), MenuExtender);
+
+	InMenuBuilder.PushCommandList(Viewport.Pin()->GetCommandList().ToSharedRef());
+	InMenuBuilder.PushExtender(MenuExtender.ToSharedRef());
+
+	InMenuBuilder.BeginSection("MyCustomAssetViewportCamera", INVTEXT("Camera"));
+	{
+		// Although Focusing on an object works without this
+		// (thanks to SEditorViewport::BindCommands() in SMyCustomAssetEditorViewport connecting it to the input),
+		// it's nice to also have a menu option too!
+		InMenuBuilder.AddMenuEntry(FEditorViewportCommands::Get().FocusViewportToSelection);
+	}
+	InMenuBuilder.EndSection();
+
+	InMenuBuilder.PopCommandList();
+	InMenuBuilder.PopExtender();
+
+	return InMenuBuilder.MakeWidget();
+	
 }
 
 TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateShowMenu() const

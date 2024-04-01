@@ -24,6 +24,11 @@ public:
 private:
 
 	/**
+	 * Generates the toolbar view menu content 
+	 */
+	TSharedRef<SWidget> GenerateViewMenu() const;
+
+	/**
 	* Generates the Show menu content
 	*/
 	TSharedRef<SWidget> GenerateShowMenu() const;
