@@ -73,28 +73,21 @@ TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateViewMenu() cons
 {
 	// This menu is "derived" from the one in the main Level viewport (the 3 lines) which has many camera related options
 	// (but not the Camera Views menu (has "Perspective" label)) 
-	const TSharedPtr<FExtender> MenuExtender = FExtender::Combine(Extenders);
+	static const FName MenuName("MyCustomAssetEditor.ViewMenu");
 
-	constexpr bool bInShouldCloseWindowAfterMenuSelection = true;
-	FMenuBuilder InMenuBuilder(bInShouldCloseWindowAfterMenuSelection, Viewport.Pin()->GetCommandList(), MenuExtender);
-
-	InMenuBuilder.PushCommandList(Viewport.Pin()->GetCommandList().ToSharedRef());
-	InMenuBuilder.PushExtender(MenuExtender.ToSharedRef());
-
-	InMenuBuilder.BeginSection("MyCustomAssetViewportCamera", INVTEXT("Camera"));
+	if(!UToolMenus::Get()->IsMenuRegistered(MenuName))
 	{
-		// Although Focusing on an object works without this
-		// (thanks to SEditorViewport::BindCommands() in SMyCustomAssetEditorViewport connecting it to the input),
+		UToolMenu* Menu = UToolMenus::Get()->RegisterMenu(MenuName);
+		FToolMenuSection& Section = Menu->AddSection("MyCustomAssetViewportCamera", INVTEXT("Camera"));
+		// Although Focusing on an object works without this (thanks to SEditorViewport::BindCommands() in SMyCustomAssetEditorViewport connecting it to the input),
 		// it's nice to also have a menu option too!
-		InMenuBuilder.AddMenuEntry(FEditorViewportCommands::Get().FocusViewportToSelection);
+		const FToolMenuEntry FocusViewportSelectionEntry = FToolMenuEntry::InitMenuEntry(FEditorViewportCommands::Get().FocusViewportToSelection);
+		Section.AddEntry(FocusViewportSelectionEntry);
 	}
-	InMenuBuilder.EndSection();
 
-	InMenuBuilder.PopCommandList();
-	InMenuBuilder.PopExtender();
-
-	return InMenuBuilder.MakeWidget();
-	
+	TSharedPtr<FExtender> MenuExtender = FExtender::Combine(Extenders);
+	FToolMenuContext MenuContext(CommandList, MenuExtender);
+	return UToolMenus::Get()->GenerateWidget(MenuName, MenuContext);
 }
 
 TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateShowMenu() const
@@ -103,7 +96,7 @@ TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateShowMenu() cons
 	// It was taken from SAnimViewportToolBar::GenerateShowMenu which also uses FShowFlagFilter & FEngineShowFlags
 	// There it is done selectively vs SLevelViewportToolBar which does it more programmatically
 	// (makes senses since it is for every Show Flag...)
-	static const FName MenuName("MyCustomAssetEditor.ViewportToolbar");
+	static const FName MenuName("MyCustomAssetEditor.ShowMenu");
 
 	if (!UToolMenus::Get()->IsMenuRegistered(MenuName))
 	{
