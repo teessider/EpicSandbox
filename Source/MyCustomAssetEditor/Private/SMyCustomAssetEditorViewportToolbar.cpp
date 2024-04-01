@@ -7,6 +7,7 @@
 #include "ShowFlagMenuCommands.h"
 #include "SEditorViewportToolBarMenu.h"
 #include "EditorViewportCommands.h"
+#include "Widgets/Input/SNumericEntryBox.h"
 
 void SMyCustomAssetEditorViewportToolbar::Construct(const FArguments& InArgs, TSharedPtr<SMyCustomAssetEditorViewport> InViewport)
 {
@@ -81,8 +82,8 @@ TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateViewMenu() cons
 		FToolMenuSection& Section = Menu->AddSection("MyCustomAssetViewportCamera", INVTEXT("Camera"));
 		// Although Focusing on an object works without this (thanks to SEditorViewport::BindCommands() in SMyCustomAssetEditorViewport connecting it to the input),
 		// it's nice to also have a menu option too!
-		const FToolMenuEntry FocusViewportSelectionEntry = FToolMenuEntry::InitMenuEntry(FEditorViewportCommands::Get().FocusViewportToSelection);
-		Section.AddEntry(FocusViewportSelectionEntry);
+		Section.AddMenuEntry(FEditorViewportCommands::Get().FocusViewportToSelection);
+		Section.AddEntry(FToolMenuEntry::InitWidget("FOVAngle", MakeFOVWidget(), INVTEXT("Field of View (H)")));
 	}
 
 	TSharedPtr<FExtender> MenuExtender = FExtender::Combine(Extenders);
@@ -119,4 +120,50 @@ TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateShowMenu() cons
 	TSharedPtr<FExtender> MenuExtender = FExtender::Combine(Extenders);
 	FToolMenuContext MenuContext(CommandList, MenuExtender);
 	return UToolMenus::Get()->GenerateWidget(MenuName, MenuContext);
+}
+
+TOptional<float> SMyCustomAssetEditorViewportToolbar::OnGetFOVValue() const
+{
+	if(Viewport.IsValid())
+	{
+		return Viewport.Pin()->GetViewportClient()->ViewFOV;
+	}
+	return 0.0f;
+}
+
+void SMyCustomAssetEditorViewportToolbar::OnFOVValueChanged(float NewValue)
+{
+	TSharedPtr MyCustomAssetEditorViewport(Viewport.Pin());
+	if (MyCustomAssetEditorViewport.IsValid())
+	{
+		TSharedPtr<FEditorViewportClient> EditorViewportClient = MyCustomAssetEditorViewport->GetViewportClient();
+		EditorViewportClient->ViewFOV = NewValue;
+		EditorViewportClient->Invalidate();
+	}
+}
+
+TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::MakeFOVWidget() const
+{
+	constexpr float FOVMin = 5.f;
+	constexpr float FOVMax = 170.f;
+
+	return
+		SNew(SBox)
+		.HAlign(HAlign_Right)
+		[
+			SNew(SBox)
+			.Padding(FMargin(4.0f, 0.0f, 0.0f, 0.0f))
+			.WidthOverride(100.0f)
+			[
+				SNew(SNumericEntryBox<float>)
+				.Font(FAppStyle::GetFontStyle(TEXT("MenuItem.Font")))
+				.AllowSpin(true)
+				.MinValue(FOVMin)
+				.MaxValue(FOVMax)
+				.MinSliderValue(FOVMin)
+				.MaxSliderValue(FOVMax)
+				.Value(this, &SMyCustomAssetEditorViewportToolbar::OnGetFOVValue)
+				.OnValueChanged(const_cast<SMyCustomAssetEditorViewportToolbar*>(this), &SMyCustomAssetEditorViewportToolbar::OnFOVValueChanged)
+			]
+		];
 }

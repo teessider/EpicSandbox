@@ -32,6 +32,13 @@ private:
 	* Generates the Show menu content
 	*/
 	TSharedRef<SWidget> GenerateShowMenu() const;
+
+	/** Called by the FOV slider in the perspective viewport to get the FOV value */
+	TOptional<float> OnGetFOVValue() const;
+	/** Called when the FOV slider is adjusted in the perspective viewport */
+	void OnFOVValueChanged(float NewValue);
+	/** Build the FOV widget */
+	TSharedRef<SWidget> MakeFOVWidget() const;
 	
 	/** The viewport that we are in */
 	TWeakPtr<SMyCustomAssetEditorViewport> Viewport;
