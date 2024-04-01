@@ -26,7 +26,9 @@ public class MyCustomAssetEditor : ModuleRules
 			"SlateCore",
 			"Slate",
 			"AdvancedPreviewScene",
-			"InputCore"
+			"InputCore",
+			"ToolMenus",
+			"CommonMenuExtensions" // Needed for FShowFlagFilter & FShowFlagMenuCommands
 		}
 		);
 		

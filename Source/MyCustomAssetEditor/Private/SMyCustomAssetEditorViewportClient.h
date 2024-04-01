@@ -17,7 +17,7 @@ class UMyCustomAsset;
 class FMyCustomAssetEditorViewportClient : public FEditorViewportClient, public TSharedFromThis<FMyCustomAssetEditorViewportClient>
 {
 public:
-	FMyCustomAssetEditorViewportClient(TWeakPtr<FMyCustomAssetEditor> InMyCustomAssetEditor, const TSharedRef<SMyCustomAssetEditorViewport>& InMyCustomAssetEditorViewport, const TSharedRef<FAdvancedPreviewScene>& InPreviewScene, UMyCustomAsset* InPreviewMyCustomAsset);
+	FMyCustomAssetEditorViewportClient(TWeakPtr<FMyCustomAssetEditor> InMyCustomAssetEditor, const TSharedRef<SMyCustomAssetEditorViewport>& InMyCustomAssetEditorViewport, const TSharedRef<FAdvancedPreviewScene>& InPreviewScene);
 	virtual ~FMyCustomAssetEditorViewportClient() override;
 
 	// FEditorViewportClient interface
@@ -39,6 +39,7 @@ public:
 	virtual FMatrix GetWidgetCoordSystem() const override { return FMatrix::Identity; }
 	virtual ECoordSystem GetWidgetCoordSystemSpace() const override { return COORD_Local; }
 	virtual bool ShouldOrbitCamera() const override;
+	// End of FEditorViewportClient interface
 
 	void ResetCamera();
 	

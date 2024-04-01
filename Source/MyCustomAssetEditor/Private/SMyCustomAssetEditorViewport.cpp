@@ -3,11 +3,11 @@
 #include "SMyCustomAssetEditorViewport.h"
 #include "SMyCustomAssetEditorViewportClient.h"
 #include "SMyCustomAssetEditorViewportToolbar.h"
-#include "MyCustomAssetEditorCommands.h"
 #include "MyCustomAsset.h"
 
 #include "Slate/SceneViewport.h"
 #include "ComponentReregisterContext.h" // For PREVIEW_COMPONENT
+#include "ShowFlagMenuCommands.h" // For FShowFlagMenuCommands
 
 void SMyCustomAssetEditorViewport::Construct(const FArguments& InArgs)
 {
@@ -16,6 +16,7 @@ void SMyCustomAssetEditorViewport::Construct(const FArguments& InArgs)
 	
 	MyCustomAssetEditorPtr = InArgs._MyCustomAssetEditor;
 	MyCustomAsset = InArgs._ObjectToEdit;
+	Extenders = InArgs._Extenders;
 	CurrentViewMode = VMI_Lit;
 
 	// Setup a PREVIEW_COMPONENT here //
@@ -23,7 +24,11 @@ void SMyCustomAssetEditorViewport::Construct(const FArguments& InArgs)
 	
 	// It almost EVERY Editor Viewport uses this method to construct the viewport widget as it sets up the Slate widget in it's entirety!
 	// Although one COULD make their version in theory (there are some Viewports which don't use SEditorViewport)
-	SEditorViewport::Construct(SEditorViewport::FArguments());
+	// At some point in UE5's lifecyle, some extra properties were added (for tracking Slate Widgets?)
+	// (Following the example of Skeletal Mesh/Animation Viewport)
+	SEditorViewport::Construct(SEditorViewport::FArguments()
+		.IsEnabled(FSlateApplication::Get().GetNormalExecutionAttribute())
+		.AddMetaData<FTagMetaData>(TEXT("MyCustomAssetEditor.Viewport")));
 
 	// Reregister Component here //
 	FComponentReregisterContext ReregisterContext(PreviewMeshComponent);	
@@ -62,23 +67,6 @@ FString SMyCustomAssetEditorViewport::GetReferencerName() const
 	return TEXT("SMyCustomAssetEditorViewport");
 }
 
-TSharedRef<SEditorViewport> SMyCustomAssetEditorViewport::GetViewportWidget()
-{
-	return SharedThis(this);
-}
-
-TSharedPtr<FExtender> SMyCustomAssetEditorViewport::GetExtenders() const
-{
-	//TSharedPtr<FExtender> Result(MakeShareable(new FExtender));
-	TSharedPtr<FExtender> Result(MakeShared<FExtender>());
-	return Result;
-}
-
-void SMyCustomAssetEditorViewport::OnFloatingButtonClicked()
-{
-	// Except for the Level Editor viewport, this is EMPTY
-}
-
 void SMyCustomAssetEditorViewport::RefreshViewport()
 {
 	// Invalidate the viewport's display.
@@ -96,7 +84,7 @@ void SMyCustomAssetEditorViewport::ResetCamera()
 TSharedRef<FEditorViewportClient> SMyCustomAssetEditorViewport::MakeEditorViewportClient()
 {
 	// EditorViewportClient = MakeShareable(new FMyCustomAssetEditorViewportClient(MyCustomAssetEditorPtr, SharedThis(this), &PreviewScene, MyCustomAsset));
-	EditorViewportClient = MakeShared<FMyCustomAssetEditorViewportClient>(MyCustomAssetEditorPtr, SharedThis(this), PreviewScene.ToSharedRef(), MyCustomAsset);
+	EditorViewportClient = MakeShared<FMyCustomAssetEditorViewportClient>(MyCustomAssetEditorPtr, SharedThis(this), PreviewScene.ToSharedRef());
 
 	EditorViewportClient->bSetListenerPosition = false;
 
@@ -108,30 +96,15 @@ TSharedRef<FEditorViewportClient> SMyCustomAssetEditorViewport::MakeEditorViewpo
 
 void SMyCustomAssetEditorViewport::BindCommands()
 {
-	// Inside of SEditorViewport::BindCommands()
-	SEditorViewport::BindCommands();
+	// Multiple Commands can use this CommandList Reference!
+	FUICommandList& CommandListRef = *CommandList;
 
-	const FMyCustomAssetEditorCommands& Commands = FMyCustomAssetEditorCommands::Get();
+	// All Show Flag Commands are inside of FShowFlagMenuCommands so only need to call that BindCommands method here!
+	FShowFlagMenuCommands::Get().BindCommands(CommandListRef, Client);
 
-	const TSharedRef<FMyCustomAssetEditorViewportClient> EditorViewportClientRef = EditorViewportClient.ToSharedRef();
+	// All the commands listed here should mirror what is in FMyCustomAssetEditorCommands::RegisterCommands!!
+	// These are unique to this viewport/toolkit
 
-	CommandList->MapAction(
-		Commands.SetShowGrid,
-		FExecuteAction::CreateSP(EditorViewportClientRef, &FMyCustomAssetEditorViewportClient::SetShowGrid),
-		FCanExecuteAction(),
-		FIsActionChecked::CreateSP(EditorViewportClientRef, &FMyCustomAssetEditorViewportClient::IsSetShowGridChecked));
-
-	CommandList->MapAction(
-		Commands.SetShowBounds,
-		FExecuteAction::CreateSP(EditorViewportClientRef, &FMyCustomAssetEditorViewportClient::ToggleShowBounds),
-		FCanExecuteAction(),
-		FIsActionChecked::CreateSP(EditorViewportClientRef, &FMyCustomAssetEditorViewportClient::IsSetShowBoundsChecked));
-
-	CommandList->MapAction(
-		Commands.SetShowCollision,
-		FExecuteAction::CreateSP(EditorViewportClientRef, &FMyCustomAssetEditorViewportClient::SetShowCollision),
-		FCanExecuteAction(),
-		FIsActionChecked::CreateSP(EditorViewportClientRef, &FMyCustomAssetEditorViewportClient::IsSetShowCollisionChecked));
 }
 
 void SMyCustomAssetEditorViewport::OnFocusViewportToSelection()
@@ -141,7 +114,11 @@ void SMyCustomAssetEditorViewport::OnFocusViewportToSelection()
 
 TSharedPtr<SWidget> SMyCustomAssetEditorViewport::MakeViewportToolbar()
 {
-	return SNew(SMyCustomAssetEditorViewportToolbar, SharedThis(this));
+	// Since this is used as a variable later, SAssignNew is used rather than SNew
+	return SAssignNew(ViewportToolbar, SMyCustomAssetEditorViewportToolbar, SharedThis(this))
+	.Visibility(EVisibility::SelfHitTestInvisible)
+	.Cursor(EMouseCursor::Default)
+	.Extenders(Extenders);
 }
 
 bool SMyCustomAssetEditorViewport::IsVisible() const

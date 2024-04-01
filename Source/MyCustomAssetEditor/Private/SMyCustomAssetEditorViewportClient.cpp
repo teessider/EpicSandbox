@@ -6,29 +6,20 @@
 #include "Editor/EditorPerProjectUserSettings.h"
 
 
-FMyCustomAssetEditorViewportClient::FMyCustomAssetEditorViewportClient(TWeakPtr<FMyCustomAssetEditor> InMyCustomAssetEditor, const TSharedRef<SMyCustomAssetEditorViewport>& InMyCustomAssetEditorViewport, const TSharedRef<FAdvancedPreviewScene>& InPreviewScene, UMyCustomAsset* InPreviewMyCustomAsset)
+FMyCustomAssetEditorViewportClient::FMyCustomAssetEditorViewportClient(TWeakPtr<FMyCustomAssetEditor> InMyCustomAssetEditor, const TSharedRef<SMyCustomAssetEditorViewport>& InMyCustomAssetEditorViewport, const TSharedRef<FAdvancedPreviewScene>& InPreviewScene)
 	: FEditorViewportClient(nullptr, &InPreviewScene.Get(), StaticCastSharedRef<SEditorViewport>(InMyCustomAssetEditorViewport))
 	, MyCustomAssetEditorPtr(InMyCustomAssetEditor)
 	, MyCustomAssetEditorViewportPtr(InMyCustomAssetEditorViewport)
 {
-	// Setup defaults for the common draw helper. 
-	DrawHelper.bDrawPivot = false;
-	DrawHelper.bDrawWorldBox = false;
-	DrawHelper.bDrawKillZ = false;
-	DrawHelper.bDrawGrid = false;
-	DrawHelper.GridColorAxis = FColor(160,160,160);
-	DrawHelper.GridColorMajor = FColor(144,144,144);
-	DrawHelper.GridColorMinor = FColor(128,128,128);
-	DrawHelper.PerspectiveGridSize = 2048.0f;
-	DrawHelper.NumCells = DrawHelper.PerspectiveGridSize / (16 /**Cellsize*/ * 2);
-
-	// Rider suggests to explicitly call the function even though this is usually not called so explicitly elsewhere in the engine...
-	FEditorViewportClient::SetViewMode(VMI_Lit);
+	// Setup defaults for the common draw helper.
+	// Toggling the grid now relies on the Show Flag (SF_GRID)
+	// so it seems there is not a need to define the grid here unless something really custom is necessary
+	DrawHelper.bDrawGrid = true;
+	DrawHelper.PerspectiveGridSize = UE_OLD_HALF_WORLD_MAX1;
 
 	EngineShowFlags.SetSeparateTranslucency(true);
-	EngineShowFlags.SetSnap(0);
 	EngineShowFlags.SetCompositeEditorPrimitives(true);
-	OverrideNearClipPlane(1.0f);
+	OverrideNearClipPlane(UE_KINDA_SMALL_NUMBER);  // It is expected that the meshes in this Viewport can be quite small
 	bUsingOrbitCamera = true;
 	
 	// This is how it is done in the Static Mesh & LidarPointCloud preview scenes

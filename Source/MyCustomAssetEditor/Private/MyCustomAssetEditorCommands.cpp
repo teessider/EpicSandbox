@@ -2,13 +2,13 @@
 
 #include "MyCustomAssetEditorCommands.h"
 
-#define LOCTEXT_NAMESPACE "MyCustomAssetEditor"
+#define LOCTEXT_NAMESPACE ""
 
 void FMyCustomAssetEditorCommands::RegisterCommands()
 {
-	UI_COMMAND(SetShowGrid, "Grid", "Displays the viewport grid.", EUserInterfaceActionType::ToggleButton, FInputChord());
-	UI_COMMAND(SetShowBounds, "Bounds", "Toggles display of the bounds of the preview component.", EUserInterfaceActionType::ToggleButton, FInputChord());
-	UI_COMMAND(SetShowCollision, "Collision", "Toggles display of the collision of the preview component", EUserInterfaceActionType::ToggleButton, FInputChord());
+	// Only Commands unique to this editor should go in here
+	// Previously the Show Grid, Bounds & Collision commands were here
+	// but they are now handled elsewhere: FShowFlagMenuCommands & FEditorViewportCommands
 }
 
 #undef LOCTEXT_NAMESPACE

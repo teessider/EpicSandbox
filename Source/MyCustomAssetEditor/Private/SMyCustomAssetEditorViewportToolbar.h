@@ -5,24 +5,35 @@
 #include "CoreMinimal.h"
 #include "Widgets/DeclarativeSyntaxSupport.h"
 #include "Widgets/SWidget.h"
-#include "SCommonEditorViewportToolbarBase.h"
+#include "SViewportToolBar.h"
 
+class SMyCustomAssetEditorViewport;
 
 /**
  * The level viewport toolbar widget that is placed in the viewport
  */
-class SMyCustomAssetEditorViewportToolbar : public SCommonEditorViewportToolbarBase
+class SMyCustomAssetEditorViewportToolbar : public SViewportToolBar
 {
 public:
 	SLATE_BEGIN_ARGS(SMyCustomAssetEditorViewportToolbar) {}
+	SLATE_ARGUMENT(TArray<TSharedPtr<FExtender>>, Extenders)
 	SLATE_END_ARGS()
 
-	void Construct(const FArguments& InArgs, TSharedPtr<class ICommonEditorViewportToolbarInfoProvider> InInfoProvider);
+	void Construct(const FArguments& InArgs, TSharedPtr<SMyCustomAssetEditorViewport> InViewport);
 
 private:
 
 	/**
 	* Generates the Show menu content
 	*/
-	virtual TSharedRef<SWidget> GenerateShowMenu() const override;
+	TSharedRef<SWidget> GenerateShowMenu() const;
+	
+	/** The viewport that we are in */
+	TWeakPtr<SMyCustomAssetEditorViewport> Viewport;
+
+	/** Command list */
+	TSharedPtr<FUICommandList> CommandList;
+
+	/** Extenders */
+	TArray<TSharedPtr<FExtender>> Extenders;
 };

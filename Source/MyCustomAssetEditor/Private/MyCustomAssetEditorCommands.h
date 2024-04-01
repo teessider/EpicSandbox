@@ -24,8 +24,7 @@ public:
 	virtual void RegisterCommands() override;
 	// End of TCommand<> interface
 	
-	TSharedPtr<FUICommandInfo> SetShowGrid;
-	TSharedPtr<FUICommandInfo> SetShowBounds;
-	TSharedPtr<FUICommandInfo> SetShowCollision;
-	
+	// for each unique command a TSharedPtr<FUICommandInfo> should be made
+	// Example:
+	// TSharedPtr<FUICommandInfo> SetShowCoolViewportVisualization
 };

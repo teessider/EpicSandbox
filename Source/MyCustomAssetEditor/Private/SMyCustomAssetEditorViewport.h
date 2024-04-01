@@ -3,12 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-// #include "SlateFwd.h"
 #include "UObject/GCObject.h"
 #include "SEditorViewport.h"
 #include "AdvancedPreviewScene.h"
-#include "SCommonEditorViewportToolbarBase.h"
 
+class SMyCustomAssetEditorViewportToolbar;
 class FMyCustomAssetEditor;
 class FMyCustomAssetEditorViewportClient;
 
@@ -21,11 +20,12 @@ class UMyCustomAsset;
 /**
  * MyCustomAsset Editor Preview viewport widget
  */
-class SMyCustomAssetEditorViewport : public SEditorViewport, public FGCObject, public ICommonEditorViewportToolbarInfoProvider
+class SMyCustomAssetEditorViewport : public SEditorViewport, public FGCObject
 {
 public:
 	SLATE_BEGIN_ARGS(SMyCustomAssetEditorViewport) {}
 		SLATE_ARGUMENT(TWeakPtr<FMyCustomAssetEditor>, MyCustomAssetEditor)
+		SLATE_ARGUMENT(TArray<TSharedPtr<FExtender>>, Extenders)
 		SLATE_ARGUMENT(UMyCustomAsset*, ObjectToEdit)
 	SLATE_END_ARGS()
 
@@ -43,12 +43,6 @@ public:
 
 	/** Returns the preview scene being rendered in the viewport */
 	TSharedRef<FAdvancedPreviewScene> GetPreviewScene() const { return PreviewScene.ToSharedRef(); }
-
-	// ICommonEditorViewportToolbarInfoProvider interface
-	virtual TSharedRef<class SEditorViewport> GetViewportWidget() override;
-	virtual TSharedPtr<FExtender> GetExtenders() const override;
-	virtual void OnFloatingButtonClicked() override;
-	// End of ICommonEditorViewportToolbarInfoProvider interface
 
 	void RefreshViewport();
 	
@@ -75,11 +69,17 @@ private:
 	/** The scene for this viewport. */
 	TSharedPtr<FAdvancedPreviewScene> PreviewScene;
 
-	/** Editor Viewport client */
+	/** MyCustomAssetEditor viewport client */
 	TSharedPtr<FMyCustomAssetEditorViewportClient> EditorViewportClient;
 
 	/** The currently selected view mode. */
 	EViewModeIndex CurrentViewMode;
+	
+	/** The viewport toolbar */
+	TSharedPtr<SMyCustomAssetEditorViewportToolbar> ViewportToolbar;
+
+	/** Menu extenders */
+	TArray<TSharedPtr<FExtender>> Extenders;
 	
 	/** MyCustomAsset being edited */
 	UMyCustomAsset* MyCustomAsset;
