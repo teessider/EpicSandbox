@@ -33,7 +33,7 @@ void FAssetTypeActions_MyCustomAsset::OpenAssetEditor(const TArray<UObject*>& In
 	// The for loop here is similar to every other Asset Editor opening (without any special things done...for now)
 	for (auto ObjIt = InObjects.CreateConstIterator(); ObjIt; ++ObjIt)
 	{
-		if (UMyCustomAsset* MyCustomAsset = Cast<UMyCustomAsset>(*ObjIt))
+		if (TObjectPtr<UMyCustomAsset> MyCustomAsset = Cast<UMyCustomAsset>(*ObjIt))
 		{
 			const TSharedRef<FMyCustomAssetEditor> NewCustomAssetEditor(new FMyCustomAssetEditor());
 			NewCustomAssetEditor->InitMyCustomAssetEditor(Mode, EditWithinLevelEditor, MyCustomAsset);

@@ -29,6 +29,6 @@ UMyCustomAssetFactory::UMyCustomAssetFactory()
 
 UObject* UMyCustomAssetFactory::FactoryCreateNew(UClass* InClass, UObject* InParent, FName InName, EObjectFlags Flags, UObject* Context, FFeedbackContext* Warn)
 {
-	UMyCustomAsset* MyCustomAsset = NewObject<UMyCustomAsset>(InParent, InClass, InName, Flags);
+	TObjectPtr<UMyCustomAsset> MyCustomAsset = NewObject<UMyCustomAsset>(InParent, InClass, InName, Flags);
 	return MyCustomAsset;
 }

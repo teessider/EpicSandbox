@@ -24,13 +24,13 @@ struct FCustomMeshStruct
 	FName MeshName;
 
 	UPROPERTY(EditDefaultsOnly, meta=(DisplayName = "Struct Static Mesh"))
-	UStaticMesh* CustomStructMesh;
+	TObjectPtr<UStaticMesh> CustomStructMesh;
 };
 
 /**
  * 
  */
-UCLASS(BlueprintType)
+UCLASS(BlueprintType, meta=(LoadBehavior="LazyOnDemand"))
 class EPICSANDBOX_API UMyCustomAsset : public UObject
 {
 	GENERATED_BODY()
@@ -48,10 +48,10 @@ public:
 	bool bIsActive;
 
 	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(DisplayName = "First Static Mesh"))
-	class UStaticMesh* FirstCustomStaticMesh;
+	TObjectPtr<class UStaticMesh> FirstCustomStaticMesh;
 
 	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(DisplayName = "Second Static Mesh"))
-	class UStaticMesh* SecondCustomStaticMesh;
+	TObjectPtr<class UStaticMesh> SecondCustomStaticMesh;
 
 	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(DisplayName = "Struct Mesh"))
 	FCustomMeshStruct CustomStructMesh;
