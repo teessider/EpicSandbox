@@ -26,7 +26,7 @@ public:
 	SLATE_BEGIN_ARGS(SMyCustomAssetEditorViewport) {}
 		SLATE_ARGUMENT(TWeakPtr<FMyCustomAssetEditor>, MyCustomAssetEditor)
 		SLATE_ARGUMENT(TArray<TSharedPtr<FExtender>>, Extenders)
-		SLATE_ARGUMENT(UMyCustomAsset*, ObjectToEdit)
+		SLATE_ARGUMENT(TObjectPtr<UMyCustomAsset>, ObjectToEdit)
 	SLATE_END_ARGS()
 
 	void Construct(const FArguments& InArgs);
@@ -84,9 +84,9 @@ private:
 	TArray<TSharedPtr<FExtender>> Extenders;
 	
 	/** MyCustomAsset being edited */
-	UMyCustomAsset* MyCustomAsset;
+	TObjectPtr<UMyCustomAsset> MyCustomAsset;
 
-	UStaticMeshComponent* PreviewMeshComponent;
+	TObjectPtr<UStaticMeshComponent> PreviewMeshComponent;
 
 	/** Pointer to the vertical box into which the overlay text items are added */
 	TSharedPtr<SVerticalBox> OverlayTextVerticalBox;

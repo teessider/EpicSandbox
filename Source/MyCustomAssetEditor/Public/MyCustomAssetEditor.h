@@ -26,7 +26,7 @@ public:
 	virtual void UnregisterTabSpawners(const TSharedRef<class FTabManager>& InTabManager) override;
 	// End of IToolkit interface
 	
-	void InitMyCustomAssetEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, class UMyCustomAsset* InMyCustomAsset);
+	void InitMyCustomAssetEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, TObjectPtr<UMyCustomAsset> InMyCustomAsset);
 	
 	
 	//~ Begin FAssetEditorToolkit
@@ -44,7 +44,7 @@ public:
 
 private:
 	/** The currently viewed MyCustomAsset which potentially contains many meshes */
-	UMyCustomAsset* MyCustomAssetBeingEdited;
+	TObjectPtr<UMyCustomAsset> MyCustomAssetBeingEdited;
 
 	
 	

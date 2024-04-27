@@ -55,7 +55,7 @@ void FMyCustomAssetEditor::UnregisterTabSpawners(const TSharedRef<FTabManager>& 
 	// InTabManager->UnregisterAllTabSpawners();  // This would this do the same as above in one go?
 }
 
-void FMyCustomAssetEditor::InitMyCustomAssetEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, class UMyCustomAsset* InMyCustomAsset)
+void FMyCustomAssetEditor::InitMyCustomAssetEditor(const EToolkitMode::Type Mode, const TSharedPtr<IToolkitHost>& InitToolkitHost, TObjectPtr<UMyCustomAsset> InMyCustomAsset)
 {
 	MyCustomAssetBeingEdited = InMyCustomAsset;
 	
