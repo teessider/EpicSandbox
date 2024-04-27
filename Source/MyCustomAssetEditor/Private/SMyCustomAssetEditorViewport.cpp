@@ -8,6 +8,8 @@
 #include "Slate/SceneViewport.h"
 #include "ComponentReregisterContext.h" // For PREVIEW_COMPONENT
 #include "ShowFlagMenuCommands.h" // For FShowFlagMenuCommands
+#include "BufferVisualizationMenuCommands.h"
+#include "NaniteVisualizationMenuCommands.h"
 
 void SMyCustomAssetEditorViewport::Construct(const FArguments& InArgs)
 {
@@ -104,10 +106,15 @@ void SMyCustomAssetEditorViewport::BindCommands()
 	FUICommandList& CommandListRef = *CommandList;
 
 	// SEditorViewport::BindCommands contains a huge list of all the common actions one can do in a viewport
-	// eg. Camera orientations, toggling the view modes (lit, unlit etc.), focusing the viewport and so on. Very useful!
+	// e.g. Camera orientations, toggling the view modes (lit, unlit etc.), focusing the viewport and so on. Very useful!
 	SEditorViewport::BindCommands();
 
-	// All Show Flag Commands are inside of FShowFlagMenuCommands so only need to call that BindCommands method here!
+	// For all the Visualize Buffer (Debug Buffer views, Nanite, Lumen, VSM etc.) commands,
+	// the editor already provides these so only need to be called here!
+	FBufferVisualizationMenuCommands::Get().BindCommands(CommandListRef, Client);
+	FNaniteVisualizationMenuCommands::Get().BindCommands(CommandListRef, Client);
+
+	// All Show Flag Commands are inside FShowFlagMenuCommands so only need to call that BindCommands method here!
 	FShowFlagMenuCommands::Get().BindCommands(CommandListRef, Client);
 
 	// All the commands listed here should mirror what is in FMyCustomAssetEditorCommands::RegisterCommands!!
@@ -118,7 +125,7 @@ void SMyCustomAssetEditorViewport::BindCommands()
 void SMyCustomAssetEditorViewport::OnFocusViewportToSelection()
 {
 	// It seems the focusing of the viewport is done in the corresponding ViewportClient
-	// (it does seem to contain all of the input logic rather than the viewport)
+	// (it does seem to contain all the input logic rather than the viewport)
 	const TSharedRef<FMyCustomAssetEditorViewportClient> MyCustomAssetEditorViewportClient = StaticCastSharedRef<FMyCustomAssetEditorViewportClient>(EditorViewportClient.ToSharedRef());
 	return MyCustomAssetEditorViewportClient->OnFocusViewportToSelection();
 }

@@ -7,6 +7,9 @@
 #include "ShowFlagMenuCommands.h"
 #include "SEditorViewportToolBarMenu.h"
 #include "EditorViewportCommands.h"
+#include "BufferVisualizationMenuCommands.h"
+#include "NaniteVisualizationMenuCommands.h"
+#include "SEditorViewportViewMenu.h"
 #include "Widgets/Input/SNumericEntryBox.h"
 
 void SMyCustomAssetEditorViewportToolbar::Construct(const FArguments& InArgs, TSharedPtr<SMyCustomAssetEditorViewport> InViewport)
@@ -37,7 +40,7 @@ void SMyCustomAssetEditorViewportToolbar::Construct(const FArguments& InArgs, TS
 			.ParentToolBar(SharedThis(this))
 			.Cursor(EMouseCursor::Default)
 			.Image("EditorViewportToolBar.OptionsDropdown")
-			.AddMetaData<FTagMetaData>(FTagMetaData(TEXT("EditorViewportToolBar.MenuDropdown")))
+			.AddMetaData<FTagMetaData>(FTagMetaData(TEXT("SMyCustomAssetEditorViewportToolbar.OptionsDropdown")))
 			.OnGetMenuContent(this, &SMyCustomAssetEditorViewportToolbar::GenerateViewMenu)
 		]
 		+SHorizontalBox::Slot()
@@ -50,8 +53,19 @@ void SMyCustomAssetEditorViewportToolbar::Construct(const FArguments& InArgs, TS
 			.Cursor(EMouseCursor::Default)
 			.Label(this, &SMyCustomAssetEditorViewportToolbar::GetCameraMenuLabel)
 			.LabelIcon( this, &SMyCustomAssetEditorViewportToolbar::GetCameraMenuLabelIcon)
-			.AddMetaData<FTagMetaData>(FTagMetaData(TEXT("EditorViewportToolBar.CameraMenu")))
+			.AddMetaData<FTagMetaData>(FTagMetaData(TEXT("SMyCustomAssetEditorViewportToolbar.CameraViewportTypeMenu")))
 			.OnGetMenuContent(this, &SMyCustomAssetEditorViewportToolbar::GenerateViewportTypeMenu)
+		]
+		+SHorizontalBox::Slot()
+		.AutoWidth()
+		.Padding(ToolbarSlotPadding)
+		[
+			SNew(SEditorViewportToolbarMenu)
+			.ParentToolBar(SharedThis(this))
+			.Cursor(EMouseCursor::Default)
+			.Label(this, &SMyCustomAssetEditorViewportToolbar::GetBufferViewsMenuLabel)
+			.LabelIcon(this, &SMyCustomAssetEditorViewportToolbar::GetBufferViewsMenuLabelIcon)
+			.OnGetMenuContent(this, &SMyCustomAssetEditorViewportToolbar::GenerateBufferViewsMenu)
 		]
 		+SHorizontalBox::Slot()
 		.AutoWidth()
@@ -62,7 +76,7 @@ void SMyCustomAssetEditorViewportToolbar::Construct(const FArguments& InArgs, TS
 			.ParentToolBar(SharedThis(this))
 			.Cursor(EMouseCursor::Default)
 			.Label(INVTEXT("Show"))
-			.AddMetaData<FTagMetaData>(FTagMetaData(TEXT("ViewMenuButton")))
+			.AddMetaData<FTagMetaData>(FTagMetaData(TEXT("EditorViewportToolBar.ShowMenuButton")))
 			.OnGetMenuContent(this, &SMyCustomAssetEditorViewportToolbar::GenerateShowMenu)
 		];
 
@@ -133,6 +147,8 @@ TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateViewportTypeMen
 {
 	static const FName MenuName("MyCustomAssetEditor.ViewportTypeMenu");
 	
+	const FEditorViewportCommands& EditorViewportActions = FEditorViewportCommands::Get();
+	
 	// This is also how it is in SLevelViewportToolBar::FillCameraMenu 
 	if(!UToolMenus::Get()->IsMenuRegistered(MenuName))
 	{
@@ -141,16 +157,219 @@ TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateViewportTypeMen
 		UToolMenu* Menu = UToolMenus::Get()->RegisterMenu(MenuName);
 		{
 			FToolMenuSection& Section = Menu->AddSection("CameraTypes");
-			Section.AddMenuEntry(FEditorViewportCommands::Get().Perspective);
+			Section.AddMenuEntry(EditorViewportActions.Perspective);
 		}
 		{
 			FToolMenuSection& Section = Menu->AddSection("LevelViewportCameraType_Ortho", INVTEXT("Orthographic"));
-			Section.AddMenuEntry(FEditorViewportCommands::Get().Top);
-			Section.AddMenuEntry(FEditorViewportCommands::Get().Bottom);
-			Section.AddMenuEntry(FEditorViewportCommands::Get().Left);
-			Section.AddMenuEntry(FEditorViewportCommands::Get().Right);
-			Section.AddMenuEntry(FEditorViewportCommands::Get().Front);
-			Section.AddMenuEntry(FEditorViewportCommands::Get().Back);
+			Section.AddMenuEntry(EditorViewportActions.Top);
+			Section.AddMenuEntry(EditorViewportActions.Bottom);
+			Section.AddMenuEntry(EditorViewportActions.Left);
+			Section.AddMenuEntry(EditorViewportActions.Right);
+			Section.AddMenuEntry(EditorViewportActions.Front);
+			Section.AddMenuEntry(EditorViewportActions.Back);
+		}
+	}
+
+	const TSharedPtr<FExtender> MenuExtender = FExtender::Combine(Extenders);
+	const FToolMenuContext MenuContext(CommandList, MenuExtender);
+	return UToolMenus::Get()->GenerateWidget(MenuName, MenuContext);
+}
+
+FText SMyCustomAssetEditorViewportToolbar::GetBufferViewsMenuLabel() const
+{
+	FText Label = INVTEXT("View");
+	
+	TSharedPtr<SEditorViewport> EditorViewport = Viewport.Pin();
+	if (EditorViewport.IsValid())
+	{
+		const TSharedPtr<FEditorViewportClient> ViewportClient = EditorViewport->GetViewportClient();
+		check(ViewportClient.IsValid());
+		const EViewModeIndex ViewMode = ViewportClient->GetViewMode();
+
+		// the View Mode switch here should match what view modes are in GenerateBufferViewsMenu
+		// and also be in EViewModeIndex enum
+		// (for example, visualising Lumen in the viewport)
+		if (ViewMode == VMI_VisualizeBuffer)
+		{
+			Label = ViewportClient->GetCurrentBufferVisualizationModeDisplayName();
+		}
+		else if (ViewMode == VMI_VisualizeNanite)
+		{
+			Label = ViewportClient->GetCurrentNaniteVisualizationModeDisplayName();
+		}
+		else
+		{
+			Label = UViewModeUtils::GetViewModeDisplayName(ViewMode);
+		}
+	}
+	
+	return Label;
+}
+
+const FSlateBrush* SMyCustomAssetEditorViewportToolbar::GetBufferViewsMenuLabelIcon() const
+{
+	TSharedPtr<SEditorViewport> EditorViewport = Viewport.Pin();
+	if (EditorViewport.IsValid())
+	{
+		const TSharedPtr<FEditorViewportClient> ViewportClient = EditorViewport->GetViewportClient();
+		check(ViewportClient.IsValid());
+		const EViewModeIndex ViewMode = ViewportClient->GetViewMode();
+
+		return UViewModeUtils::GetViewModeDisplayIcon(ViewMode);
+	}
+
+	return FStyleDefaults::GetNoBrush();
+}
+
+TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateBufferViewsMenu() const
+{
+	// For this menu...
+	// SAnimViewportToolBar actually uses the older style FMenuBuilder to create a menu from FBufferVisualizationMenuCommands BUT
+	// looking into SLevelViewportToolBar shows that it is a child of SEditorViewportViewMenu which allows it to redefine GenerateViewMenuContent.
+	// This method does the menu generation BUT it is protected and every submenu is locally defined which in the end means it has to be recreated...
+	// (unless all this is better exposed in the future...)
+	static const FName MenuName("MyCustomAssetEditor.BufferViewsMenu");
+
+	const FEditorViewportCommands& EditorViewportActions = FEditorViewportCommands::Get();
+	
+	if(!UToolMenus::Get()->IsMenuRegistered(MenuName))
+	{
+		// Most of what follows can basically be found in SEditorViewportViewMenu::FillViewMenu
+		UToolMenu* Menu = UToolMenus::Get()->RegisterMenu(MenuName);
+		
+		FToolMenuSection& Section = Menu->AddSection("ViewMode", INVTEXT("View Mode"));
+		{
+			// Since this viewport will not likely show different types of Collision (Player vs Visibility),
+			// those views have been left out in favour of the Collision Show Flag.
+			Section.AddMenuEntry(EditorViewportActions.LitMode, UViewModeUtils::GetViewModeDisplayName(VMI_Lit));
+			Section.AddMenuEntry(EditorViewportActions.UnlitMode, UViewModeUtils::GetViewModeDisplayName(VMI_Unlit));
+			Section.AddMenuEntry(EditorViewportActions.WireframeMode, UViewModeUtils::GetViewModeDisplayName(VMI_BrushWireframe));
+			Section.AddMenuEntry(EditorViewportActions.DetailLightingMode, UViewModeUtils::GetViewModeDisplayName(VMI_Lit_DetailLighting));
+			Section.AddMenuEntry(EditorViewportActions.LightingOnlyMode, UViewModeUtils::GetViewModeDisplayName(VMI_LightingOnly));
+			Section.AddMenuEntry(EditorViewportActions.ReflectionOverrideMode, UViewModeUtils::GetViewModeDisplayName(VMI_ReflectionOverride));
+		}
+
+		// If RayTracing is enabled, it would go here inside a #if RHI_RAYTRACING macro
+		// See SEditorViewportViewMenu::FillViewMenu
+		// (at the time of writing I don't have a Raytracing capable GPU to see if this would work or not :(
+		// (I would very much guess it does since it would be just a copy/paste from Epic ;))
+		{
+			// In SEditorViewportViewMenu the Optimization Submenu is done inside a local struct with a static function
+			// (also the same with other submenus. Maybe it is to not bloat the class?)
+			// but the structure/layout is basically the same as other menus. A lot of the debug views are based on platform/shader level support however.
+			// Since this is a single viewport with one light source (at least for now) and don't expect to have more, some views will be omitted.
+			Section.AddSubMenu(
+				"OptimizationSubMenu",
+				INVTEXT("Optimization Viewmodes"), INVTEXT("Select optimization visualizer"),
+				// the text inside the [] in the Lambda is for capturing local variables to use inside the lambda expression.
+				// EditorViewportActions or (Class field) Viewport wouldn't be seen here otherwise!
+				FNewToolMenuDelegate::CreateLambda([this, EditorViewportActions](UToolMenu* SubMenu)
+				{
+					//TODO: FIX Ptr crash
+					// const TSharedPtr<SMyCustomAssetEditorViewport> ViewportPtr = Viewport.Pin();
+					// const UWorld* World = ViewportPtr->GetViewportClient()->GetWorld();
+					
+					FToolMenuSection& SubMenuSection = SubMenu->AddSection("OptimizationViewmodes", INVTEXT("Optimization Viewmodes"));
+					SubMenuSection.AddMenuEntry(EditorViewportActions.ShaderComplexityMode, UViewModeUtils::GetViewModeDisplayName(VMI_ShaderComplexity));
+					// if (AllowDebugViewShaderMode(DVSM_ShaderComplexityContainedQuadOverhead, GMaxRHIShaderPlatform, World->GetFeatureLevel()))
+					// {
+						SubMenuSection.AddMenuEntry(EditorViewportActions.ShaderComplexityWithQuadOverdrawMode, UViewModeUtils::GetViewModeDisplayName(VMI_ShaderComplexityWithQuadOverdraw));
+					// }
+					// if (AllowDebugViewShaderMode(DVSM_QuadComplexity, GMaxRHIShaderPlatform, World->GetFeatureLevel()))
+					// {
+						SubMenuSection.AddMenuEntry(EditorViewportActions.QuadOverdrawMode, UViewModeUtils::GetViewModeDisplayName(VMI_QuadOverdraw));
+					// }
+				}),
+				FUIAction(
+					FExecuteAction(),
+					FCanExecuteAction(),
+					FIsActionChecked::CreateLambda([this]
+					{
+						//TODO: FIX Ptr crash
+						// const TSharedRef<SEditorViewport> EditorViewportRef = Viewport.Pin().ToSharedRef();
+						// const TSharedPtr<FEditorViewportClient> EditorViewportClient = EditorViewportRef->GetViewportClient();
+						// check(EditorViewportClient.IsValid());
+						// 	
+						// const EViewModeIndex ViewMode = EditorViewportClient->GetViewMode();
+						// return
+						// 	ViewMode == VMI_LightComplexity || ViewMode == VMI_ShaderComplexity
+						// 	|| ViewMode == VMI_ShaderComplexityWithQuadOverdraw || ViewMode == VMI_QuadOverdraw;
+						return false;
+					})
+				),
+				EUserInterfaceActionType::RadioButton,
+				/* bInOpenSubMenuOnClick = */ false,
+				FSlateIcon(FAppStyle::GetAppStyleSetName(), "EditorViewport.QuadOverdrawMode"));
+		}
+		{
+			// This menu is from SLevelViewportToolBar
+			// Visualize Debug Buffer Views
+			Section.AddSubMenu(
+				"VisualizeVufferViewMode",
+				INVTEXT("Buffer Visualization"), INVTEXT("Select a mode for buffer visualization"),
+				// When using other "...MenuCommands" DON'T FORGET TO BIND THEM in SMyCustomAssetEditorViewport!!!
+				FNewMenuDelegate::CreateStatic(&FBufferVisualizationMenuCommands::BuildVisualisationSubMenu),
+				FUIAction(
+					FExecuteAction(),
+					FCanExecuteAction(),
+					FIsActionChecked::CreateLambda([this]
+					{
+						//TODO: FIX Ptr crash
+						// const TSharedRef<SEditorViewport> EditorViewportRef = Viewport.Pin().ToSharedRef();
+						// const TSharedPtr<FEditorViewportClient> EditorViewportClient = EditorViewportRef->GetViewportClient();
+						// check(EditorViewportClient.IsValid());
+						
+						// 	return EditorViewportClient->IsViewModeEnabled(VMI_VisualizeBuffer);
+						
+						return false;
+					})
+				),
+				EUserInterfaceActionType::RadioButton,
+				/* bInOpenSubMenuOnClick = */ false,
+				FSlateIcon(FAppStyle::GetAppStyleSetName(), "EditorViewport.VisualizeBufferMode")
+			);
+		}
+		{
+			// This menu is from SLevelViewportToolBar
+			// Visualize Nanite Views
+			Section.AddSubMenu(
+				"VisualizeNaniteViewMode",
+				INVTEXT("Nanite Visualization"),
+				INVTEXT("Select a mode for Nanite visualization"),
+				// When using other "...MenuCommands" DON'T FORGET TO BIND THEM in SMyCustomAssetEditorViewport!!!
+				FNewMenuDelegate::CreateStatic(&FNaniteVisualizationMenuCommands::BuildVisualisationSubMenu),
+				FUIAction(
+					FExecuteAction(),
+					FCanExecuteAction(),
+					FIsActionChecked::CreateLambda([this]
+					{
+						//TODO: FIX Ptr crash
+						// const TSharedRef<SEditorViewport> EditorViewportRef = Viewport.Pin().ToSharedRef();
+						// const TSharedPtr<FEditorViewportClient> EditorViewportClient = EditorViewportRef->GetViewportClient();
+						// check(EditorViewportClient.IsValid());
+						//
+						// return EditorViewportClient->IsViewModeEnabled(VMI_VisualizeNanite);
+						return false;
+					})
+				),
+				EUserInterfaceActionType::RadioButton,
+				/* bInOpenSubMenuOnClick = */ false,
+				FSlateIcon(FAppStyle::GetAppStyleSetName(), "EditorViewport.VisualizeNaniteMode")
+			);
+		}
+		{
+			FToolMenuSection& ExposureMenuSection = Menu->AddSection("Exposure", INVTEXT("Exposure"));
+
+			//TODO: FIX Ptr crash
+			// const TSharedRef<SWidget> FixedEV100Menu = Viewport.Pin()->BuildFixedEV100Menu();
+			// const TSharedPtr<FEditorViewportClient> EditorViewportClient = Viewport.Pin()->GetViewportClient();
+			//
+			//
+			// const bool bIsLevelEditor = EditorViewportClient.IsValid() && EditorViewportClient->IsLevelEditorClient();
+			//
+			ExposureMenuSection.AddMenuEntry(EditorViewportActions.ToggleAutoExposure);
+			// ExposureMenuSection.AddMenuEntry(bIsLevelEditor ? EditorViewportActions.ToggleInGameExposure : EditorViewportActions.ToggleAutoExposure);
+			// ExposureMenuSection.AddEntry(FToolMenuEntry::InitWidget("FixedEV100", FixedEV100Menu, INVTEXT("EV100")));
 		}
 	}
 

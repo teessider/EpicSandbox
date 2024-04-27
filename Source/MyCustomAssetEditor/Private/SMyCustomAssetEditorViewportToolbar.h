@@ -23,32 +23,36 @@ public:
 
 private:
 
-	/**
-	 * Generates the toolbar view menu content 
-	 */
+	/* Generates the toolbar view menu content */
 	TSharedRef<SWidget> GenerateViewMenu() const;
 
-	/**
-	 * Returns the label for the Viewport type tool bar menu, which changes depending on the current selected type
-	 *
+	/** Returns the label for the Viewport type toolbar menu, which changes depending on the current selected type
 	 * @return	Label to use for this Menu
 	 */
 	FText GetCameraMenuLabel() const;
 
-	/* Returns the label icon for the Camera tool bar menu, which changes depending on viewport type 
-	 *
+	/** Returns the label icon for the Camera toolbar menu, which changes depending on viewport type 
 	 * @return	Label icon to use for this menu label
 	 */
 	const FSlateBrush* GetCameraMenuLabelIcon() const;
 
-	/**
-	 * Generates the toolbar viewport type menu content 
-	 */
+	/* Generates the toolbar viewport type menu content */
 	TSharedRef<SWidget> GenerateViewportTypeMenu() const;
 
-	/**
-	* Generates the Show menu content
-	*/
+	/** Returns the label for the Viewport type toolbar menu, which changes depending on the current selected type
+	 * @return	Label to use for this Menu
+	 */
+	FText GetBufferViewsMenuLabel() const;
+	
+	/** Returns the label icon for the Camera toolbar menu, which changes depending on viewport type 
+	 * @return	Label icon to use for this menu label
+	 */
+	const FSlateBrush* GetBufferViewsMenuLabelIcon() const;
+
+	/* Generates the toolbar Buffer views menu content */
+	TSharedRef<SWidget> GenerateBufferViewsMenu() const;
+	
+	/* Generates the Show menu content */
 	TSharedRef<SWidget> GenerateShowMenu() const;
 
 	/** Called by the FOV slider in the perspective viewport to get the FOV value */

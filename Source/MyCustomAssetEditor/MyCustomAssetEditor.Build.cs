@@ -28,7 +28,8 @@ public class MyCustomAssetEditor : ModuleRules
 			"AdvancedPreviewScene",
 			"InputCore",
 			"ToolMenus",
-			"CommonMenuExtensions" // Needed for FShowFlagFilter & FShowFlagMenuCommands
+			"CommonMenuExtensions", // Needed for FShowFlagFilter & FShowFlagMenuCommands
+			"RHI"
 		}
 		);
 		
