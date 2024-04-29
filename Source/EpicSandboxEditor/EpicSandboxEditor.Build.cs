@@ -22,10 +22,10 @@ public class EpicSandboxEditor : ModuleRules
 			"Core", 
 			"CoreUObject",
 			"UnrealEd",
-			"AssetTools",
 			"SlateCore",
 			"Slate", 
-			"EditorStyle"
+			"EditorStyle",
+			"AssetDefinition"
 		}
 		);
 		
