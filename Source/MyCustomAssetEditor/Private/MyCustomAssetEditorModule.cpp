@@ -13,12 +13,6 @@ void FMyCustomAssetEditorModule::StartupModule()
 {
 	UE_LOG(LogMyCustomAssetEditor, Warning, TEXT("My Custom Asset Editor (for Game) Module Started"));
 	
-
-	// MenuExtensibilityManager = MakeShareable(new FExtensibilityManager);
-	MenuExtensibilityManager = MakeShared<FExtensibilityManager>();
-	// ToolBarExtensibilityManager = MakeShareable(new FExtensibilityManager);
-	ToolBarExtensibilityManager = MakeShared<FExtensibilityManager>();
-
 	FMyCustomAssetEditorCommands::Register();
 
 	// INITIALIZE ASSET EDITOR SLATE STYLE HERE IF NECESSARY
@@ -26,9 +20,6 @@ void FMyCustomAssetEditorModule::StartupModule()
 
 void FMyCustomAssetEditorModule::ShutdownModule()
 {
-	MenuExtensibilityManager.Reset();
-	ToolBarExtensibilityManager.Reset();
-
 	FMyCustomAssetEditorCommands::Unregister();
 	
 	// UNREGISTER ASSET EDITOR SLATE STYLE HERE TOO

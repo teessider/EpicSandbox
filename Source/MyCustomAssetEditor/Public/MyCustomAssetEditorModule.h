@@ -15,11 +15,4 @@ public:
 	virtual void StartupModule() override;
 	virtual void ShutdownModule() override;
 	// End IModuleInterface implementation
-
-	TSharedPtr<FExtensibilityManager> GetMenuExtensibilityManager() const { return MenuExtensibilityManager; }
-	TSharedPtr<FExtensibilityManager> GetToolBarExtensibilityManager() const { return ToolBarExtensibilityManager; }
-
-private:
-	TSharedPtr<FExtensibilityManager> MenuExtensibilityManager;
-	TSharedPtr<FExtensibilityManager> ToolBarExtensibilityManager;
 };
