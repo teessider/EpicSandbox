@@ -15,6 +15,11 @@ public:
 	virtual void ShutdownModule() override;
 	// End IModuleInterface implementation
 
+	static void RegisterAssetFactories();
+	static void UnregisterAssetFactories();
+	
+	static void RegisterAssetPlacement();
+
 	static FText GetAssetCategoryName() { return EpicSandboxAssetCategory; }
 
 private:

@@ -15,6 +15,9 @@ public:
 	// Sets default values for this actor's properties
 	AMyCustomActor();
 
+	UPROPERTY(EditAnywhere)
+	TObjectPtr<class UMyCustomAsset> MyCustomAsset;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

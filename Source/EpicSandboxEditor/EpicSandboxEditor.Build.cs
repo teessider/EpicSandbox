@@ -25,7 +25,9 @@ public class EpicSandboxEditor : ModuleRules
 			"SlateCore",
 			"Slate", 
 			"EditorStyle",
-			"AssetDefinition"
+			"AssetDefinition",
+			"EditorFramework",
+			"PlacementMode"
 		}
 		);
 		
