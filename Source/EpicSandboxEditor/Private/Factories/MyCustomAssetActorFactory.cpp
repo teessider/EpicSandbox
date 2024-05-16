@@ -23,3 +23,24 @@ bool UMyCustomAssetActorFactory::CanCreateActorFrom(const FAssetData& AssetData,
 
 	return true;
 }
+
+UObject* UMyCustomAssetActorFactory::GetAssetFromActorInstance(AActor* ActorInstance)
+{
+	check(ActorInstance->IsA(NewActorClass));
+	AMyCustomActor* MyCustomActor = CastChecked<AMyCustomActor>(ActorInstance);
+	
+	return MyCustomActor->MyCustomAsset;
+}
+
+void UMyCustomAssetActorFactory::PostSpawnActor(UObject* Asset, AActor* NewActor)
+{
+	Super::PostSpawnActor(Asset, NewActor);
+
+	TObjectPtr<UMyCustomAsset> MyCustomAsset = Cast<UMyCustomAsset>(Asset);
+	AMyCustomActor* MyCustomActor = CastChecked<AMyCustomActor>(NewActor);
+
+	if(Asset)
+	{
+		MyCustomActor->MyCustomAsset = MyCustomAsset;
+	}
+}
