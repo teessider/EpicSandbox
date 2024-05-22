@@ -37,7 +37,7 @@ void SMyCustomAssetEditorViewport::Construct(const FArguments& InArgs)
 
 	// SET_PREVIEW_COMPONENT_MESH(MyCustomAsset);
 	PreviewScene->AddComponent(PreviewMeshComponent, FTransform::Identity);
-	PreviewMeshComponent->SetStaticMesh(MyCustomAsset->FirstCustomStaticMesh);
+	PreviewMeshComponent->SetStaticMesh(MyCustomAsset->GetFirstStaticMesh());
 	PreviewMeshComponent->MarkRenderStateDirty();
 
 	ResetCamera();

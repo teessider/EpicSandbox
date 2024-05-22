@@ -37,24 +37,18 @@ class EPICSANDBOX_API UMyCustomAsset : public UObject
 
 public:
 	UMyCustomAsset();
+
+	TObjectPtr<UStaticMesh> GetFirstStaticMesh() const { return FirstCustomStaticMesh; }
+	TObjectPtr<UStaticMesh> GetSecondStaticMesh() const { return SecondCustomStaticMesh; }
 	
 	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(UIMin = 0, UIMax = 10, DisplayAfter = "CustomDataAsset"), AssetRegistrySearchable)
 	int32 CustomInt;
 
-	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(DisplayAfter = "bIsActive"))
-	UMyCustomDataAsset* CustomDataAsset;
+	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(DisplayAfter = "SecondCustomStaticMesh"))
+	TObjectPtr<class UMyCustomDataAsset> CustomDataAsset;
 
-	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(EditCondition = "CustomInt > 5"))
+	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(EditCondition = "CustomInt > 5", DisplayAfter = "CustomInt"))
 	bool bIsActive;
-
-	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(DisplayName = "First Static Mesh"))
-	TObjectPtr<class UStaticMesh> FirstCustomStaticMesh;
-
-	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(DisplayName = "Second Static Mesh"))
-	TObjectPtr<class UStaticMesh> SecondCustomStaticMesh;
-
-	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(DisplayName = "Struct Mesh"))
-	FCustomMeshStruct CustomStructMesh;
 
 	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(DisplayName = "List of Struct Static Meshes", TitleProperty = "MeshName"))
 	TArray<FCustomMeshStruct> CustomStaticMeshes;
@@ -68,6 +62,12 @@ public:
 #endif
 
 protected:
+	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(DisplayName = "First Static Mesh"))
+	TObjectPtr<class UStaticMesh> FirstCustomStaticMesh;
+
+	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(DisplayName = "Second Static Mesh"))
+	TObjectPtr<class UStaticMesh> SecondCustomStaticMesh;
+	
 	UPROPERTY(EditDefaultsOnly, Category="MyCustomAsset|Description", meta=(InlineEditConditionToggle)) //InlineEditConditionTOGGLE inlines the bool visually (puts it on the same row)
 	bool bEnableDescription;
 	

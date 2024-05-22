@@ -3,6 +3,8 @@
 
 #include "MyCustomActor.h"
 
+#include "MyCustomAsset.h"
+
 // Sets default values
 AMyCustomActor::AMyCustomActor()
 {
@@ -14,7 +16,35 @@ AMyCustomActor::AMyCustomActor()
 	RootComponent->bVisualizeComponent = true;
 #endif
 	
+	FirstStaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("FirstStaticMeshComponent");
+	FirstStaticMeshComponent->SetMobility(EComponentMobility::Movable);
+	FirstStaticMeshComponent->SetupAttachment(RootComponent);
 
+	SecondStaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>("SecondStaticMeshComponent");
+	SecondStaticMeshComponent->SetMobility(EComponentMobility::Movable);
+	SecondStaticMeshComponent->SetupAttachment(RootComponent);
+}
+
+void AMyCustomActor::SetMyCustomAsset(const TObjectPtr<UMyCustomAsset>& InMyCustomAsset)
+{
+	MyCustomAsset = *InMyCustomAsset;
+}
+
+void AMyCustomActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
+{
+	FName PropertyName;
+	if (PropertyChangedEvent.Property)
+	{
+		PropertyName = PropertyChangedEvent.Property->GetFName();
+	}
+
+	if (PropertyName == GET_MEMBER_NAME_CHECKED(AMyCustomActor, MyCustomAsset))
+	{
+		/* TODO:
+		 *  Change/set up the static mesh components again based on what is set in MyCustomAsset
+		 */
+	}
+	Super::PostEditChangeProperty(PropertyChangedEvent);
 }
 
 // Called when the game starts or when spawned
