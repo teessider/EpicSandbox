@@ -59,7 +59,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, Category=MyCustomAsset, meta=(DisplayName = "List of Struct Static Meshes", TitleProperty = "MeshName"))
 	TArray<FCustomMeshStruct> CustomStaticMeshes;
 
-	virtual void GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags) const override;
+	virtual void GetAssetRegistryTags(FAssetRegistryTagsContext Context) const override;
 	
 #if WITH_EDITOR
 	virtual void GetAssetRegistryTagMetadata(TMap<FName, FAssetRegistryTagMetadata>& OutMetadata) const override;
