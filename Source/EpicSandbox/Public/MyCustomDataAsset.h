@@ -20,7 +20,7 @@ public:
 	UPROPERTY(EditAnywhere, Category=MyCustomDataAsset, meta=(UIMin=-10, UIMax=10), AssetRegistrySearchable)
 	int32 CustomDataInt;
 
-	virtual void GetAssetRegistryTags(TArray<FAssetRegistryTag>& OutTags) const override;
+	virtual void GetAssetRegistryTags(FAssetRegistryTagsContext Context) const override;
 
 #if WITH_EDITOR
 	virtual void GetAssetRegistryTagMetadata(TMap<FName, FAssetRegistryTagMetadata>& OutMetadata) const override;
