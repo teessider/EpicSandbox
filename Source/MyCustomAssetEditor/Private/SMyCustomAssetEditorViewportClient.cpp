@@ -60,21 +60,21 @@ bool FMyCustomAssetEditorViewportClient::InputKey(const FInputKeyEventArgs& Even
 	return bHandled;
 }
 
-bool FMyCustomAssetEditorViewportClient::InputAxis(FViewport* InViewport, FInputDeviceId DeviceId, FKey Key, float Delta, float DeltaTime, int32 NumSamples, bool bGamepad)
+bool FMyCustomAssetEditorViewportClient::InputAxis(const FInputKeyEventArgs& Args)
 {
 	// Exactly like Static Mesh, Material Editor & LidarPoint Cloud (with a small selection exception there) Viewport clients
 	bool bResult = true;
 	
 	if (!bDisableInput)
 	{
-		bResult = AdvancedPreviewScene->HandleViewportInput(InViewport, DeviceId, Key, Delta, DeltaTime, NumSamples, bGamepad);
+		bResult = AdvancedPreviewScene->HandleViewportInput(Args.Viewport, Args.InputDevice, Args.Key, Args.AmountDepressed, Args.DeltaTime, Args.NumSamples, Args.IsGamepad());
 		if (bResult)
 		{
 			Invalidate();
 		}
 		else
 		{
-			bResult = FEditorViewportClient::InputAxis(InViewport, DeviceId, Key, Delta, DeltaTime, NumSamples, bGamepad);
+			bResult = FEditorViewportClient::InputAxis(Args);
 		}
 	}
 
