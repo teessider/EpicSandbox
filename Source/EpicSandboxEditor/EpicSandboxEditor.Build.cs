@@ -27,7 +27,10 @@ public class EpicSandboxEditor : ModuleRules
 			"EditorStyle",
 			"AssetDefinition",
 			"EditorFramework",
-			"PlacementMode"
+			"PlacementMode",
+			"DeveloperSettings",
+			"PropertyEditor",
+			"ToolWidgets" // Needed for SPositiveActionButton
 		}
 		);
 		

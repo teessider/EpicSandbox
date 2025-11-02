@@ -20,6 +20,9 @@ public:
 	
 	static void RegisterAssetPlacement();
 
+	static void RegisterDetailsCustomizations();
+	static void UnregisterDetailsCustomizations();
+
 	static FText GetAssetCategoryName() { return EpicSandboxAssetCategory; }
 
 private:

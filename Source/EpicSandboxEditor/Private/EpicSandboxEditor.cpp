@@ -4,6 +4,7 @@
 #include "EpicSandboxEditorStyle.h"
 #include "MyCustomActor.h"
 #include "Factories/MyCustomAssetActorFactory.h"
+#include "EpicSandboxEditorSettingsCustomization.h"
 
 #include "Modules/ModuleManager.h"
 #include "IPlacementModeModule.h"
@@ -20,6 +21,7 @@ void FEpicSandboxEditor::StartupModule()
 	FEpicSandboxEditorStyle::Initialize();
 	RegisterAssetFactories();
 	RegisterAssetPlacement();
+	RegisterDetailsCustomizations();
 }
 
 void FEpicSandboxEditor::ShutdownModule()
@@ -27,6 +29,7 @@ void FEpicSandboxEditor::ShutdownModule()
 	//Unregister the Slate Style here too
 	FEpicSandboxEditorStyle::Shutdown();
 	UnregisterAssetFactories();
+	UnregisterDetailsCustomizations();
 	// UE_LOG(LogEpicSandboxEditor, Warning, TEXT("Editor (for Game) Module Shutdown"));
 }
 
@@ -51,6 +54,25 @@ void FEpicSandboxEditor::RegisterAssetPlacement()
 	IPlacementModeModule::Get().RegisterPlaceableItem(Info.UniqueHandle, MakeShared<FPlaceableItem>(
 		*AMyCustomActor::StaticClass(),
 		FAssetData(AMyCustomActor::StaticClass())));
+}
+
+void FEpicSandboxEditor::RegisterDetailsCustomizations()
+{
+	static const FName PropertyEditorModuleName("PropertyEditor");
+	FPropertyEditorModule& PropertyEditorModule = FModuleManager::LoadModuleChecked<FPropertyEditorModule>(PropertyEditorModuleName);
+	
+	PropertyEditorModule.RegisterCustomClassLayout("EpicSandboxEditorSettings", FOnGetDetailCustomizationInstance::CreateStatic(&FEpicSandboxEditorSettingsCustomization::MakeInstance));
+}
+
+void FEpicSandboxEditor::UnregisterDetailsCustomizations()
+{
+	static const FName PropertyEditorModuleName("PropertyEditor");
+	if (FModuleManager::Get().IsModuleLoaded(PropertyEditorModuleName))
+	{
+		FPropertyEditorModule& PropertyEditorModule = FModuleManager::GetModuleChecked<FPropertyEditorModule>(PropertyEditorModuleName);
+		
+		PropertyEditorModule.UnregisterCustomClassLayout("EpicSandboxEditorSettings");
+	}
 }
 
 void FEpicSandboxEditor::UnregisterAssetFactories()
