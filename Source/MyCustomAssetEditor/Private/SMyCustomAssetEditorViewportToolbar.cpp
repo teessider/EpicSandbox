@@ -120,7 +120,7 @@ TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateViewMenu() cons
 
 FText SMyCustomAssetEditorViewportToolbar::GetCameraMenuLabel() const
 {
-	// Same as SLevelViewportToolBar
+	// Same as (deprecated) SLevelViewportToolBar
 	TSharedPtr MyCustomAssetEditorViewport(Viewport.Pin());
 	if(MyCustomAssetEditorViewport.IsValid())
 	{
@@ -131,7 +131,7 @@ FText SMyCustomAssetEditorViewportToolbar::GetCameraMenuLabel() const
 
 const FSlateBrush* SMyCustomAssetEditorViewportToolbar::GetCameraMenuLabelIcon() const
 {
-	// Same as SLevelViewportToolBar
+	// Same as (deprecated) SLevelViewportToolBar
 	TSharedPtr MyCustomAssetEditorViewport(Viewport.Pin());
 	if (MyCustomAssetEditorViewport.IsValid())
 	{
@@ -149,11 +149,12 @@ TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateViewportTypeMen
 	
 	const FEditorViewportCommands& EditorViewportActions = FEditorViewportCommands::Get();
 	
-	// This is also how it is in SLevelViewportToolBar::FillCameraMenu 
+	// This is also how it was in SLevelViewportToolBar::FillCameraMenu 
 	if(!UToolMenus::Get()->IsMenuRegistered(MenuName))
 	{
-		// This is also how it is in SLevelViewportToolBar::FillCameraMenu without the extra section for placed cameras
+		// This is also how it was in SLevelViewportToolBar::FillCameraMenu without the extra section for placed cameras
 		// (after registering the menu in a different method)
+		// This is now (5.7.2) similar to UE::UnrealEd::PopulateCameraMenu
 		UToolMenu* Menu = UToolMenus::Get()->RegisterMenu(MenuName);
 		{
 			FToolMenuSection& Section = Menu->AddSection("CameraTypes");
@@ -224,9 +225,9 @@ const FSlateBrush* SMyCustomAssetEditorViewportToolbar::GetBufferViewsMenuLabelI
 TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateBufferViewsMenu() const
 {
 	// For this menu...
-	// SAnimViewportToolBar actually uses the older style FMenuBuilder to create a menu from FBufferVisualizationMenuCommands BUT
-	// looking into SLevelViewportToolBar shows that it is a child of SEditorViewportViewMenu which allows it to redefine GenerateViewMenuContent.
-	// This method does the menu generation BUT it is protected and every submenu is locally defined which in the end means it has to be recreated...
+	// SAnimViewportToolBar used to use the older style FMenuBuilder to create a menu from FBufferVisualizationMenuCommands BUT
+	// when (now deprecated and removed) SLevelViewportToolBar was looked into, it showed that it was a child of SEditorViewportViewMenu which allowed it to redefine GenerateViewMenuContent.
+	// This method did the menu generation BUT it is protected and every submenu is locally defined which in the end means it has to be recreated...
 	// (unless all this is better exposed in the future...)
 	static const FName MenuName("MyCustomAssetEditor.BufferViewsMenu");
 
@@ -234,7 +235,7 @@ TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateBufferViewsMenu
 	
 	if(!UToolMenus::Get()->IsMenuRegistered(MenuName))
 	{
-		// Most of what follows can basically be found in SEditorViewportViewMenu::FillViewMenu
+		// Most of what follows can basically be found in UE::UnrealEd::PopulateViewModesMenu
 		UToolMenu* Menu = UToolMenus::Get()->RegisterMenu(MenuName);
 		
 		FToolMenuSection& Section = Menu->AddSection("ViewMode", INVTEXT("View Mode"));
@@ -249,12 +250,12 @@ TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateBufferViewsMenu
 			Section.AddMenuEntry(EditorViewportActions.ReflectionOverrideMode, UViewModeUtils::GetViewModeDisplayName(VMI_ReflectionOverride));
 		}
 
-		// If RayTracing is enabled, it would go here inside a #if RHI_RAYTRACING macro
-		// See SEditorViewportViewMenu::FillViewMenu
+		// If RayTracing is enabled, it would go here
+		// See UE::UnrealEd::PopulateViewModesMenu
 		// (at the time of writing I don't have a Raytracing capable GPU to see if this would work or not :(
 		// (I would very much guess it does since it would be just a copy/paste from Epic ;))
 		{
-			// In SEditorViewportViewMenu the Optimization Submenu is done inside a local struct with a static function
+			// In PopulateViewModesMenu the Optimization Submenu is done inside a local struct with a static function
 			// (also the same with other submenus. Maybe it is to not bloat the class?)
 			// but the structure/layout is basically the same as other menus. A lot of the debug views are based on platform/shader level support however.
 			// Since this is a single viewport with one light source (at least for now) and don't expect to have more, some views will be omitted.
@@ -302,10 +303,10 @@ TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateBufferViewsMenu
 				FSlateIcon(FAppStyle::GetAppStyleSetName(), "EditorViewport.QuadOverdrawMode"));
 		}
 		{
-			// This menu is from SLevelViewportToolBar
+			// This menu is from UE::UnrealEd::PopulateViewModesMenu
 			// Visualize Debug Buffer Views
 			Section.AddSubMenu(
-				"VisualizeVufferViewMode",
+				"VisualizeBufferViewMode",
 				INVTEXT("Buffer Visualization"), INVTEXT("Select a mode for buffer visualization"),
 				// When using other "...MenuCommands" DON'T FORGET TO BIND THEM in SMyCustomAssetEditorViewport!!!
 				FNewMenuDelegate::CreateStatic(&FBufferVisualizationMenuCommands::BuildVisualisationSubMenu),
@@ -330,7 +331,7 @@ TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateBufferViewsMenu
 			);
 		}
 		{
-			// This menu is from SLevelViewportToolBar
+			// This menu is from UE::UnrealEd::PopulateViewModesMenu
 			// Visualize Nanite Views
 			Section.AddSubMenu(
 				"VisualizeNaniteViewMode",
@@ -382,8 +383,8 @@ TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateBufferViewsMenu
 TSharedRef<SWidget> SMyCustomAssetEditorViewportToolbar::GenerateShowMenu() const
 {
 	// This below is the new Tools Menus System vs the old Menu Builder
-	// It was taken from SAnimViewportToolBar::GenerateShowMenu which also uses FShowFlagFilter & FEngineShowFlags
-	// There it is done selectively vs SLevelViewportToolBar which does it more programmatically
+	// It was taken from UE::AnimationEditor::FillShowSubmenu which also uses FShowFlagFilter & FEngineShowFlags
+	// There it is done selectively vs FShowFlagMenuCommands::CreateShowFlagsSubMenu which does it more programmatically
 	// (makes senses since it is for every Show Flag...)
 	static const FName MenuName("MyCustomAssetEditor.ShowMenu");
 
