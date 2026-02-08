@@ -130,7 +130,7 @@ void SMyCustomAssetEditorViewport::OnFocusViewportToSelection()
 	return MyCustomAssetEditorViewportClient->OnFocusViewportToSelection();
 }
 
-TSharedPtr<SWidget> SMyCustomAssetEditorViewport::MakeViewportToolbar()
+TSharedPtr<SWidget> SMyCustomAssetEditorViewport::BuildViewportToolbar()
 {
 	// Since this is used as a variable later, SAssignNew is used rather than SNew
 	return SAssignNew(ViewportToolbar, SMyCustomAssetEditorViewportToolbar, SharedThis(this))

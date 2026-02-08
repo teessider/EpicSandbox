@@ -56,7 +56,7 @@ protected:
 	virtual EVisibility OnGetViewportContentVisibility() const override { return IsVisible() ? EVisibility::Visible : EVisibility::Collapsed; }
 	virtual void BindCommands() override;
 	virtual void OnFocusViewportToSelection() override;
-	virtual TSharedPtr<SWidget> MakeViewportToolbar() override;
+	virtual TSharedPtr<SWidget> BuildViewportToolbar() override;
 
 private:
 	/** Determines the visibility of the viewport. */

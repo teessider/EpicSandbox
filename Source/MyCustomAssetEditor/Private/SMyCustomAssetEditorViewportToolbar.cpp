@@ -9,7 +9,7 @@
 #include "EditorViewportCommands.h"
 #include "BufferVisualizationMenuCommands.h"
 #include "NaniteVisualizationMenuCommands.h"
-#include "SEditorViewportViewMenu.h"
+#include "ViewportToolbar/UnrealEdViewportToolbar.h"
 #include "Widgets/Input/SNumericEntryBox.h"
 
 void SMyCustomAssetEditorViewportToolbar::Construct(const FArguments& InArgs, TSharedPtr<SMyCustomAssetEditorViewport> InViewport)
@@ -124,7 +124,7 @@ FText SMyCustomAssetEditorViewportToolbar::GetCameraMenuLabel() const
 	TSharedPtr MyCustomAssetEditorViewport(Viewport.Pin());
 	if(MyCustomAssetEditorViewport.IsValid())
 	{
-		return GetCameraMenuLabelFromViewportType(MyCustomAssetEditorViewport->GetViewportClient()->ViewportType);
+		return UE::UnrealEd::GetCameraSubmenuLabelFromViewportType(MyCustomAssetEditorViewport->GetViewportClient()->ViewportType);
 	}
 	return INVTEXT("Camera");
 }
