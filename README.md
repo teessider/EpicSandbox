@@ -12,6 +12,6 @@ This test project aims to be synced for the latest release version of the engine
 - My Custom Asset Editor:
 - - [x] Advanced Preview Scene For MyCustomAsset
 - - [x] Update Show Menu (it doesn't have nice menu sections like in SK viewport)
-- - [ ] Change preview mesh when changing "First Static Mesh" changes
-- - [ ] Add "Second Static Mesh" to viewport
+- - [x] Change preview mesh when changing "First Static Mesh" changes
+- - [x] Add "Second Static Mesh" to viewport
 - - [x] Add support for framing the object(s)
