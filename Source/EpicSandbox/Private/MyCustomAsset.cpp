@@ -44,7 +44,7 @@ void UMyCustomAsset::GetAssetRegistryTagMetadata(TMap<FName, FAssetRegistryTagMe
 		);
 }
 
-EDataValidationResult UMyCustomAsset::IsDataValid(TArray<FText>& ValidationErrors)
+EDataValidationResult UMyCustomAsset::IsDataValid(FDataValidationContext& Context) const
 {
 	// If returning ONLY the EDataValidationResult enum entries, the "normal" Data Validation system is not used so one has to add their own texts there...
 	// (makes sense as AssetPasses/AssetFails methods come from the the Data Validation Editor Subsystem... )
