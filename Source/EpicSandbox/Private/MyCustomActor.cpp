@@ -30,6 +30,7 @@ void AMyCustomActor::SetMyCustomAsset(const TObjectPtr<UMyCustomAsset>& InMyCust
 	MyCustomAsset = *InMyCustomAsset;
 }
 
+#if WITH_EDITOR
 void AMyCustomActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	FName PropertyName;
@@ -46,6 +47,7 @@ void AMyCustomActor::PostEditChangeProperty(FPropertyChangedEvent& PropertyChang
 	}
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 }
+#endif
 
 // Called when the game starts or when spawned
 void AMyCustomActor::BeginPlay()
