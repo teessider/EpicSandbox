@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Andrew Bell
 
 #include "SMyCustomAssetEditorViewportClient.h"
+#include "MyCustomAsset.h"
+#include "MyCustomAssetEditor.h"
 
 #include "AssetViewerSettings.h"
 #include "Editor/EditorPerProjectUserSettings.h"
@@ -124,10 +126,18 @@ void FMyCustomAssetEditorViewportClient::ResetCamera()
 
 void FMyCustomAssetEditorViewportClient::OnFocusViewportToSelection()
 {
-	const TObjectPtr<UStaticMeshComponent> PreviewMeshComponent = MyCustomAssetEditorViewportPtr.Pin()->GetPreviewMeshComponent();
-	if(PreviewMeshComponent)
+	const TObjectPtr<UStaticMeshComponent> FirstPreviewMeshComponent = MyCustomAssetEditorViewportPtr.Pin()->GetFirstPreviewMeshComponent();
+	const TObjectPtr<UStaticMeshComponent> SecondPreviewMeshComponent = MyCustomAssetEditorViewportPtr.Pin()->GetSecondPreviewMeshComponent();
+	if (FirstPreviewMeshComponent && SecondPreviewMeshComponent)
 	{
-		FocusViewportOnBox(PreviewMeshComponent->Bounds.GetBox());
+		const TObjectPtr<UMyCustomAsset> MyCustomAsset = MyCustomAssetEditorPtr.Pin()->GetMyCustomAssetBeingEdited();
+		const TObjectPtr<UStaticMesh> FirstStaticMesh = MyCustomAsset->GetFirstStaticMesh();
+		const TObjectPtr<UStaticMesh> SecondStaticMesh = MyCustomAsset->GetSecondStaticMesh();
+		
+		FBox SelectionBoundingBox(ForceInit);
+		SelectionBoundingBox += FirstStaticMesh != nullptr ? FirstPreviewMeshComponent->Bounds.GetBox() : FBox(ForceInitToZero);
+		SelectionBoundingBox += SecondStaticMesh != nullptr ? SecondPreviewMeshComponent->Bounds.GetBox() : FBox(ForceInitToZero);
+		FocusViewportOnBox(SelectionBoundingBox);
 	}
 }
 

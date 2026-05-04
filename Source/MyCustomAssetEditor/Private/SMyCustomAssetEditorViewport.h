@@ -31,7 +31,7 @@ public:
 
 	void Construct(const FArguments& InArgs);
 	SMyCustomAssetEditorViewport();
-	
+	virtual ~SMyCustomAssetEditorViewport() override;
 
 	// FGCObject interface
 	virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
@@ -44,11 +44,17 @@ public:
 	/** Returns the preview scene being rendered in the viewport */
 	TSharedRef<FAdvancedPreviewScene> GetPreviewScene() const { return PreviewScene.ToSharedRef(); }
 
+	static void SetPreviewMesh(
+		const TSharedPtr<FAdvancedPreviewScene>& InPreviewScene,
+		TObjectPtr<UStaticMeshComponent>& PreviewMeshComponent,
+		const TObjectPtr<UStaticMesh>& InStaticMesh);
+	void SetPreviewMeshes(const TObjectPtr<UStaticMesh>& FirstInStaticMesh, const TObjectPtr<UStaticMesh>& SecondInStaticMesh);
 	void RefreshViewport();
 	
 	void ResetCamera();
 
-	TObjectPtr<UStaticMeshComponent> GetPreviewMeshComponent() const { return PreviewMeshComponent; }
+	TObjectPtr<UStaticMeshComponent> GetFirstPreviewMeshComponent() const { return FirstPreviewMeshComponent; }
+	TObjectPtr<UStaticMeshComponent> GetSecondPreviewMeshComponent() const { return SecondPreviewMeshComponent; }
 
 protected:
 	/** SEditorViewport interface */
@@ -61,6 +67,8 @@ protected:
 private:
 	/** Determines the visibility of the viewport. */
 	virtual bool IsVisible() const override;
+	
+	void OnObjectPropertyChanged(UObject* ObjectBeingModified, FPropertyChangedEvent& PropertyChangedEvent);
 	
 	/** The parent tab where this viewport resides */
 	TWeakPtr<SDockTab> ParentTab;
@@ -86,7 +94,8 @@ private:
 	/** MyCustomAsset being edited */
 	TObjectPtr<UMyCustomAsset> MyCustomAsset;
 
-	TObjectPtr<UStaticMeshComponent> PreviewMeshComponent;
+	TObjectPtr<UStaticMeshComponent> FirstPreviewMeshComponent;
+	TObjectPtr<UStaticMeshComponent> SecondPreviewMeshComponent;
 
 	/** Pointer to the vertical box into which the overlay text items are added */
 	TSharedPtr<SVerticalBox> OverlayTextVerticalBox;

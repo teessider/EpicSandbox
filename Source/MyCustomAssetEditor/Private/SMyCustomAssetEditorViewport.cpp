@@ -6,7 +6,7 @@
 #include "MyCustomAsset.h"
 
 #include "Slate/SceneViewport.h"
-#include "ComponentReregisterContext.h" // For PREVIEW_COMPONENT
+// #include "ComponentReregisterContext.h" // For FComponentReregisterContext
 #include "ShowFlagMenuCommands.h" // For FShowFlagMenuCommands
 #include "BufferVisualizationMenuCommands.h"
 #include "NaniteVisualizationMenuCommands.h"
@@ -21,10 +21,7 @@ void SMyCustomAssetEditorViewport::Construct(const FArguments& InArgs)
 	Extenders = InArgs._Extenders;
 	CurrentViewMode = VMI_Lit;
 
-	// Setup a PREVIEW_COMPONENT here //
-	PreviewMeshComponent = NewObject<UStaticMeshComponent>();
-	
-	// It almost EVERY Editor Viewport uses this method to construct the viewport widget as it sets up the Slate widget in it's entirety!
+	// Almost EVERY Editor Viewport uses this method to construct the viewport widget as it sets up the Slate widget in its entirety!
 	// Although one COULD make their version in theory (there are some Viewports which don't use SEditorViewport)
 	// At some point in UE5's lifecyle, some extra properties were added (for tracking Slate Widgets?)
 	// (Following the example of Skeletal Mesh/Animation Viewport)
@@ -32,13 +29,7 @@ void SMyCustomAssetEditorViewport::Construct(const FArguments& InArgs)
 		.IsEnabled(FSlateApplication::Get().GetNormalExecutionAttribute())
 		.AddMetaData<FTagMetaData>(TEXT("MyCustomAssetEditor.Viewport")));
 
-	// Reregister Component here //
-	FComponentReregisterContext ReregisterContext(PreviewMeshComponent);	
-
-	// SET_PREVIEW_COMPONENT_MESH(MyCustomAsset);
-	PreviewScene->AddComponent(PreviewMeshComponent, FTransform::Identity);
-	PreviewMeshComponent->SetStaticMesh(MyCustomAsset->GetFirstStaticMesh());
-	PreviewMeshComponent->MarkRenderStateDirty();
+	SetPreviewMeshes(MyCustomAsset->GetFirstStaticMesh(), MyCustomAsset->GetSecondStaticMesh());
 
 	ResetCamera();
 
@@ -50,6 +41,9 @@ void SMyCustomAssetEditorViewport::Construct(const FArguments& InArgs)
 		SAssignNew(OverlayTextVerticalBox, SVerticalBox)
 	];
 	
+	// Every time a UObject property is modified, this delegate fires off!
+	// This is the same as using UObject::PostEditChangeProperty...since that method actually broadcasts this event.
+	FCoreUObjectDelegates::OnObjectPropertyChanged.AddRaw(this, &SMyCustomAssetEditorViewport::OnObjectPropertyChanged);
 }
 
 SMyCustomAssetEditorViewport::SMyCustomAssetEditorViewport()
@@ -58,15 +52,45 @@ SMyCustomAssetEditorViewport::SMyCustomAssetEditorViewport()
 	
 }
 
+SMyCustomAssetEditorViewport::~SMyCustomAssetEditorViewport()
+{
+	// Very important to make sure delegates are removed on destruction!!
+	FCoreUObjectDelegates::OnObjectPropertyChanged.RemoveAll(this);
+}
+
 void SMyCustomAssetEditorViewport::AddReferencedObjects(FReferenceCollector& Collector)
 {
 	Collector.AddReferencedObject(MyCustomAsset);
-	Collector.AddReferencedObject(PreviewMeshComponent);
+	Collector.AddReferencedObject(FirstPreviewMeshComponent);
+	Collector.AddReferencedObject(SecondPreviewMeshComponent);
 }
 
 FString SMyCustomAssetEditorViewport::GetReferencerName() const
 {
 	return TEXT("SMyCustomAssetEditorViewport");
+}
+
+void SMyCustomAssetEditorViewport::SetPreviewMesh(const TSharedPtr<FAdvancedPreviewScene>& InPreviewScene, TObjectPtr<UStaticMeshComponent>& PreviewMeshComponent, const TObjectPtr<UStaticMesh>& InStaticMesh)
+{
+	PreviewMeshComponent = NewObject<UStaticMeshComponent>();
+	// FComponentReregisterContext ReregisterPreviewContext(PreviewMeshComponent) // NOT NEEDED IF SETTING MOBILITY!!
+		
+	InPreviewScene->AddComponent(PreviewMeshComponent, FTransform::Identity);
+	PreviewMeshComponent->SetStaticMesh(InStaticMesh);
+	PreviewMeshComponent->SetMobility(EComponentMobility::Static);
+	PreviewMeshComponent->MarkRenderStateDirty();
+}
+
+void SMyCustomAssetEditorViewport::SetPreviewMeshes(const TObjectPtr<UStaticMesh>& FirstInStaticMesh, const TObjectPtr<UStaticMesh>& SecondInStaticMesh)
+{	
+	if (FirstInStaticMesh)
+	{
+		SetPreviewMesh(PreviewScene, FirstPreviewMeshComponent, FirstInStaticMesh);
+	}
+	if (SecondInStaticMesh)
+	{
+		SetPreviewMesh(PreviewScene, SecondPreviewMeshComponent, SecondInStaticMesh);
+	}
 }
 
 void SMyCustomAssetEditorViewport::RefreshViewport()
@@ -143,4 +167,53 @@ bool SMyCustomAssetEditorViewport::IsVisible() const
 {
 	// all viewports do something very similar
 	return ViewportWidget.IsValid() && (!ParentTab.IsValid() || ParentTab.Pin()->IsForeground()) && SEditorViewport::IsVisible();
+}
+
+void SMyCustomAssetEditorViewport::OnObjectPropertyChanged(UObject* ObjectBeingModified, FPropertyChangedEvent& PropertyChangedEvent)
+{
+	// In c++, a class and a struct are almost identical except that by default:
+	// struct access is public
+	// class access is private
+	// meaning that here, no public access specifier is needed :) (unless the coding guidelines/convention requires it explicitly...) 
+	struct FOnObjectPropertyChangedHelper
+	{
+		friend class SMyCustomAssetEditorViewport; 
+	// public:
+		static void UpdateMeshComponent(
+			const TSharedPtr<FAdvancedPreviewScene>& PreviewScene,
+			TObjectPtr<UStaticMeshComponent>& PreviewStaticMeshComponent, 
+			const TObjectPtr<UStaticMesh>& PreviewStaticMesh)
+		{
+			if (PreviewStaticMeshComponent)
+			{
+				// "Removing" the component from the preview scene world means unregistering it and 
+				// removing that from the list of components the preview scene keeps a reference of.
+				PreviewScene->RemoveComponent(PreviewStaticMeshComponent);
+			}
+			if (PreviewStaticMesh)
+			{
+				// if SetPreviewMesh() was not marked as static (like UpdateMeshComponent), it would be a compile error!
+				SMyCustomAssetEditorViewport::SetPreviewMesh(PreviewScene, PreviewStaticMeshComponent, PreviewStaticMesh);
+			}
+		}
+	};
+	
+	// Inspired by SStaticMeshEditorViewport::OnObjectPropertyChanged where it updates Sockets and attached their meshes
+	// and also by FTaggedAssetBrowserConfigurationCustomization::OnObjectPropertyChanged
+	if (ObjectBeingModified->IsA<UMyCustomAsset>())
+	{
+		// Using GET_MEMBER_NAME_CHECKED(Class, Property), specific properties can be checked when they have been changed/edited
+		if (PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(UMyCustomAsset, FirstCustomStaticMesh))
+		{
+			const TObjectPtr<UStaticMesh> PreviewMesh = Cast<UMyCustomAsset>(ObjectBeingModified)->GetFirstStaticMesh();
+			FOnObjectPropertyChangedHelper::UpdateMeshComponent(PreviewScene, FirstPreviewMeshComponent, PreviewMesh);
+			RefreshViewport(); // MUST DO otherwise the viewport doesn't invalidate/update! (Mesh components are being changed ;))
+		}
+		if (PropertyChangedEvent.GetPropertyName() == GET_MEMBER_NAME_CHECKED(UMyCustomAsset, SecondCustomStaticMesh))
+		{
+			const TObjectPtr<UStaticMesh> PreviewMesh = Cast<UMyCustomAsset>(ObjectBeingModified)->GetSecondStaticMesh();
+			FOnObjectPropertyChangedHelper::UpdateMeshComponent(PreviewScene, SecondPreviewMeshComponent, PreviewMesh);
+			RefreshViewport(); // MUST DO otherwise the viewport doesn't invalidate/update! (Mesh components are being changed ;))
+		}
+	}
 }

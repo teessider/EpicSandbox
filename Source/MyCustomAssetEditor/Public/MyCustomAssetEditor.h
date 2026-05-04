@@ -41,6 +41,8 @@ public:
 	virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
 	virtual FString GetReferencerName() const override;
 	// End of FSerializableObject interface
+	
+	TObjectPtr<UMyCustomAsset> GetMyCustomAssetBeingEdited() const { return MyCustomAssetBeingEdited; }
 
 private:
 	/** The currently viewed MyCustomAsset which potentially contains many meshes */
