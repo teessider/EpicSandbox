@@ -20,9 +20,9 @@ void FMyCustomAssetEditor::RegisterTabSpawners(const TSharedRef<FTabManager>& In
 	// A Core Slate thing to do (every editor tab/window does this when Registering Tab Spawners for the TabManager
 	WorkspaceMenuCategory = InTabManager->AddLocalWorkspaceMenuCategory(INVTEXT("My Custom Asset Editor"));
 
-	// For each tab within the editor window/group, it needs to be registered with the TabManager
-	// The one from FAssetEditorToolkit has the Main Toolbar built-in hence why it is always done first
-	// (and finding the workspace root and base Asset Editor Tab category which is VERY IMPORTANT)
+	// For each tab within the editor window/group, it needs to be registered with the TabManager.
+	// The one from FAssetEditorToolkit has the Main Toolbar built-in hence why it is always done first.
+	// It finds the workspace root and base Asset Editor Tab category which is VERY IMPORTANT
 	FAssetEditorToolkit::RegisterTabSpawners(InTabManager);
 
 	// Now for the rest of the editor window/group tabs to be registered with the TabManager
@@ -59,7 +59,7 @@ void FMyCustomAssetEditor::InitMyCustomAssetEditor(const EToolkitMode::Type Mode
 {
 	MyCustomAssetBeingEdited = InMyCustomAsset;
 	
-	// For having a Details View/panel, the PropertyEditor Module is used and it has a handy method! (CreateDetailView)
+	// For having a Details View/panel, the PropertyEditor Module is used and has a handy method! (CreateDetailView)
 	// Without using the PropertyEditor Module, the way to make a details tab seems to be doing some kind of SSingleObjectDetailsPanel (as seen in LidarPointCloudEditor Module).
 	// The way of using the PropertyEditor Module seems to be much more convenient to use. If more is needed then a Details Customization would also be used (as seen in StaticMeshEditor Module)
 	
@@ -82,7 +82,7 @@ void FMyCustomAssetEditor::InitMyCustomAssetEditor(const EToolkitMode::Type Mode
 	// 	/*bHideSelectionTip*/false );
 	
 	DetailsView = PropertyEditorModule.CreateDetailView( DetailsViewArgs );
-	DetailsView->SetObject(InMyCustomAsset);  // Don't forget this! Otherwise the details tab will be EMPTY ;)
+	DetailsView->SetObject(InMyCustomAsset);  // Don't forget this! Otherwise, the details tab will be EMPTY ;)
 
 	TSharedPtr<FMyCustomAssetEditor> MyCustomAssetEditor = SharedThis(this); 
 	
